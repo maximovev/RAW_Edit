@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAW_Edit", "RAW_Edit\RAW_Edit.csproj", "{12C8A5D4-1EE0-4605-8238-48A2297C600A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3063B42B-4698-4FC0-A1AA-95A2615FFB5F} = {3063B42B-4698-4FC0-A1AA-95A2615FFB5F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxssauLibraries", "MaxssauLibraries\MaxssauLibraries\MaxssauLibraries.csproj", "{3063B42B-4698-4FC0-A1AA-95A2615FFB5F}"
 EndProject
