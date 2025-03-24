@@ -117,7 +117,7 @@ namespace RAW_Edit
             try
             {
                 SaveFileDialog dlgSave = new SaveFileDialog();
-                dlgSave.Filter = "*.Tiff|Tiff image";
+                dlgSave.Filter = "Tif files (*.Tif,*.tiff)|*.Tif;*.tiff";
                 dlgSave.AddExtension=true;
                 if (dlgSave.ShowDialog() == DialogResult.OK)
                 {
@@ -177,9 +177,11 @@ namespace RAW_Edit
             raw_processor.ConversionStageSetup.ColorTransform = true;
             raw_processor.ConversionStageSetup.ApplyGamma = true;
             raw_processor.ConversionStageSetup.UserBlackLevel = false;
+            raw_processor.ConversionStageSetup.UseHighLightReconstructuion = false;
 
             raw_processor.BlackLevel_User = 1;
-            raw_processor.RAW_bitdepth_coeff = BitDepthCoeff.RAW_12Bit;
+            
+            raw_processor.RAW_bitdepth_coeff = RAW_BitDepthCoeff;
 
             raw_processor.DCP_CM_Settings = DCP_CM_Settings;
             raw_processor.DCP_data = DCP_data;

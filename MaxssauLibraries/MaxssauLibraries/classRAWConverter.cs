@@ -27,6 +27,7 @@ namespace MaxssauLibraries
         public bool UseCMInsteadDCP;
         public bool ApplyGamma;
         public bool UserBlackLevel;
+        public bool UseHighLightReconstructuion;
     }
 
     public enum RAW_Converter_Output_Type
@@ -135,6 +136,156 @@ namespace MaxssauLibraries
         }
     }
 
+    public class RGB_Histogram
+    {
+        private classLogger Logger;
+
+        public classHistogramBuilder R;
+        public classHistogramBuilder G;
+        public classHistogramBuilder B;
+        public classHistogramBuilder RGB;
+        public OperationStatus Calc()
+        {
+            try
+            {
+                R.CalculateBins();
+                G.CalculateBins();
+                B.CalculateBins();
+                RGB.CalculateBins();
+                return OperationStatus.STATUS_OK;
+            }
+            catch (Exception ex)
+            {
+                if (Logger != null)
+                {
+                    if (Logger.status == classLogger.STATUS.OPEN)
+                    {
+                        Logger.add_to_log("RGB Histogram", ex.Message);
+                        if (ex.StackTrace != null)
+                        {
+                            Logger.add_to_log("RGB Histogram", ex.StackTrace);
+                        }
+                    }
+                }
+                return OperationStatus.STATUS_FAIL;
+            }
+        }
+
+        public OperationStatus clear()
+        {
+            try
+            {
+                R.Reset();
+                G.Reset();
+                B.Reset();
+                RGB.Reset();
+                return OperationStatus.STATUS_OK;
+            }
+            catch (Exception ex)
+            {
+                if (Logger != null)
+                {
+                    if (Logger.status == classLogger.STATUS.OPEN)
+                    {
+                        Logger.add_to_log("RGB Histogram", ex.Message);
+                        if (ex.StackTrace != null)
+                        {
+                            Logger.add_to_log("RGB Histogram", ex.StackTrace);
+                        }
+                    }
+                }
+                return OperationStatus.STATUS_FAIL;
+            }
+        }
+
+        public RGB_Histogram(classLogger logger)
+        {
+            Logger = logger;
+            R = new classHistogramBuilder(logger);
+            G = new classHistogramBuilder(logger);
+            B = new classHistogramBuilder(logger);
+            RGB = new classHistogramBuilder(logger);
+
+            R.SetBinsCount(256);
+            G.SetBinsCount(256);
+            B.SetBinsCount(256);
+        }
+    }
+
+    public class HSV_Histogram
+    {
+        private classLogger Logger;
+
+        public classHistogramBuilder H;
+        public classHistogramBuilder S;
+        public classHistogramBuilder V;
+
+        public OperationStatus Calc()
+        {
+            try
+            {
+                H.CalculateBins();
+                S.CalculateBins();
+                V.CalculateBins();
+                return OperationStatus.STATUS_OK;
+            }
+            catch (Exception ex)
+            {
+                if (Logger != null)
+                {
+                    if (Logger.status == classLogger.STATUS.OPEN)
+                    {
+                        Logger.add_to_log("HSV Histogram", ex.Message);
+                        if (ex.StackTrace != null)
+                        {
+                            Logger.add_to_log("HSV Histogram", ex.StackTrace);
+                        }
+                    }
+                }
+                return OperationStatus.STATUS_FAIL;
+            }
+        }
+
+        public OperationStatus clear()
+        {
+            try
+            {
+                H.Reset();
+                S.Reset();
+                V.Reset();
+                return OperationStatus.STATUS_OK;
+            }
+            catch (Exception ex)
+            {
+                if (Logger != null)
+                {
+                    if (Logger.status == classLogger.STATUS.OPEN)
+                    {
+                        Logger.add_to_log("RGB Histogram", ex.Message);
+                        if (ex.StackTrace != null)
+                        {
+                            Logger.add_to_log("RGB Histogram", ex.StackTrace);
+                        }
+                    }
+                }
+                return OperationStatus.STATUS_FAIL;
+            }
+        }
+
+        public HSV_Histogram(classLogger logger)
+        {
+            Logger = logger;
+            H = new classHistogramBuilder(logger);
+            S = new classHistogramBuilder(logger);
+            V = new classHistogramBuilder(logger);
+
+            H.SetBinsCount(360);
+            S.SetBinsCount(100);
+            V.SetBinsCount(100);
+        }
+    }
+
+
     public class classRAWConverter
     {
         public classDCPXMLReader               DCP_data;
@@ -162,6 +313,10 @@ namespace MaxssauLibraries
 
         public int BlackLevel_User = 10000;
 
+        public RGB_Histogram rgb_histogram_output;
+        public HSV_Histogram hsv_histogram_output;
+
+
         public  OperationStatus RAW_Process()
         {
             try
@@ -183,6 +338,10 @@ namespace MaxssauLibraries
                             BlackSubstractRGB_MinMax.reset();
                             WBRGB_MinMax.reset();
 
+                            double bit_depth_max_level = 0;
+
+                            double raw_min_level = Math.Min(Math.Min(RawImage.Image_Input_MinMaxLevels.R.get_min(), RawImage.Image_Input_MinMaxLevels.G.get_min()) , RawImage.Image_Input_MinMaxLevels.B.get_min());
+
                             WB_rgb.clear();
 
                             for (int x = 0; x < RawImage.ImageWidth; x++)
@@ -193,9 +352,9 @@ namespace MaxssauLibraries
                                     {
                                         if (ConversionStageSetup.UserBlackLevel == false)
                                         {
-                                            ImageOutput.Image_RGB[x, y].R = RawImage.Image_Input_RAW_RGB[x, y].R - RawImage.Image_Input_MinMaxLevels.R.get_min();
-                                            ImageOutput.Image_RGB[x, y].G = RawImage.Image_Input_RAW_RGB[x, y].G - RawImage.Image_Input_MinMaxLevels.G.get_min();
-                                            ImageOutput.Image_RGB[x, y].B = RawImage.Image_Input_RAW_RGB[x, y].B - RawImage.Image_Input_MinMaxLevels.B.get_min();
+                                            ImageOutput.Image_RGB[x, y].R = RawImage.Image_Input_RAW_RGB[x, y].R - raw_min_level;
+                                            ImageOutput.Image_RGB[x, y].G = RawImage.Image_Input_RAW_RGB[x, y].G - raw_min_level;
+                                            ImageOutput.Image_RGB[x, y].B = RawImage.Image_Input_RAW_RGB[x, y].B - raw_min_level;
                                         }
                                         else
                                         {
@@ -223,10 +382,11 @@ namespace MaxssauLibraries
                                         ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * DCP_CM_Settings.values[selected_profile].WB_coeff[2];
                                     }
 
+                                    
                                     if (ConversionStageSetup.ClipImageData == true)
                                     {
                                         double bit_depth_coeff = 0;
-                                        double bit_depth_max_level = 0;
+                                        
 
                                         switch (RAW_bitdepth_coeff)
                                         {
@@ -276,20 +436,56 @@ namespace MaxssauLibraries
                                 }
                             }
 
+                            if(ConversionStageSetup.UseHighLightReconstructuion==true)
+                            {
+                                classHighLightReconstruction hlr = new classHighLightReconstruction(Logger);
+
+                                hlr.HighLightReconstruction(classHighLightReconstruction.HighLightReconstructionMode.ModeGrayFill, ref ImageOutput.Image_RGB, RawImage.ImageHeight, RawImage.ImageWidth, bit_depth_max_level);
+                            }
+
                             ColorConverter.NormalizeImageTo1(ref ImageOutput.Image_RGB, RawImage.ImageWidth, RawImage.ImageHeight);
 
-                            if (ConversionStageSetup.ApplyGamma == true)
+                            
+                            rgb_histogram_output.clear();
+
+                            double gamma = 2.4;
+                            byte[] gammaTable = new byte[256];
+                            for (int i = 0; i < 256; i++)
                             {
-                                for (int x = 0; x < RawImage.ImageWidth; x++)
+                                gammaTable[i] = (byte)Math.Min(255, (int)((255.0 * Math.Pow(i / 255.0, 1.0 / gamma)) + 0.5));
+                            }
+
+
+                            for (int x = 0; x < RawImage.ImageWidth; x++)
+                            {
+                                for (int y = 0; y < RawImage.ImageHeight; y++)
                                 {
-                                    for (int y = 0; y < RawImage.ImageHeight; y++)
+                                    if (ConversionStageSetup.ApplyGamma == true)
                                     {
-                                        ImageOutput.Image_RGB[x, y].R = ColorConverter.RGB_to_sRGB(Math.Min(1, (Math.Max(0,ImageOutput.Image_RGB[x, y].R))));
+                                        /*ImageOutput.Image_RGB[x, y].R = ColorConverter.RGB_to_sRGB(Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].R))));
                                         ImageOutput.Image_RGB[x, y].G = ColorConverter.RGB_to_sRGB(Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].G))));
-                                        ImageOutput.Image_RGB[x, y].B = ColorConverter.RGB_to_sRGB(Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].B))));
+                                        ImageOutput.Image_RGB[x, y].B = ColorConverter.RGB_to_sRGB(Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].B))));*/
+                                        ImageOutput.Image_RGB[x, y].R = Math.Pow((Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].R)))), 1.0 / gamma);
+                                        ImageOutput.Image_RGB[x, y].G = Math.Pow((Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].G)))), 1.0 / gamma);
+                                        ImageOutput.Image_RGB[x, y].B = Math.Pow((Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].B)))), 1.0 / gamma);
+
                                     }
+                                    else
+                                    {
+                                        ImageOutput.Image_RGB[x, y].R = Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].R)));
+                                        ImageOutput.Image_RGB[x, y].G = Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].G)));
+                                        ImageOutput.Image_RGB[x, y].B = Math.Min(1, (Math.Max(0, ImageOutput.Image_RGB[x, y].B)));
+                                    }
+
+                                    rgb_histogram_output.R.AddValue(ImageOutput.Image_RGB[x, y].R);
+                                    rgb_histogram_output.G.AddValue(ImageOutput.Image_RGB[x, y].G);
+                                    rgb_histogram_output.B.AddValue(ImageOutput.Image_RGB[x, y].B);
+                                    rgb_histogram_output.RGB.AddValue((ImageOutput.Image_RGB[x, y].R + ImageOutput.Image_RGB[x, y].G + ImageOutput.Image_RGB[x, y].B) / 3);
                                 }
                             }
+
+                            rgb_histogram_output.Calc();
+                            
                             //ImageOutput.Image_RGB = ImageTemp.Image_RGB;
 
                             /*double coeff = Math.Min(BlackSubstractRGB_MinMax.R.get_max(), Math.Min(BlackSubstractRGB_MinMax.G.get_max(), BlackSubstractRGB_MinMax.B.get_max()));
@@ -406,6 +602,7 @@ namespace MaxssauLibraries
         public classRAWConverter(ref classLogger logger)
         {
             Logger = logger;
+            rgb_histogram_output = new RGB_Histogram(Logger);
         }
 
         
