@@ -523,7 +523,7 @@ namespace MaxssauLibraries
                                 }
                             }*/
 
-
+                            GC.Collect();
 
                             return OperationStatus.STATUS_OK;
                         }

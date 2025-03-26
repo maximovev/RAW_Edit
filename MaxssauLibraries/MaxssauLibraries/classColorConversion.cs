@@ -523,6 +523,8 @@ namespace image_designer
 			}
 			return 1;
 		}
+
+        
 		
 		public HSV_Pixel RGB_to_HSV(RGB_Pixel pixel)
 		{
