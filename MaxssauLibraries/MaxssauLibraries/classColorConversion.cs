@@ -405,6 +405,69 @@ namespace image_designer
             return ((Math.Pow(C, 0.41666)*1.055)  - 0.055);
         }
 
+        private double F(double t)
+        {
+            double Delta = 6.0 / 29.0;
+
+            return t > Math.Pow(Delta, 3)
+                ? Math.Pow(t, 1.0 / 3.0)
+                : t / (3 * Delta * Delta) + 4.0 / 29.0;
+        }
+
+        public LAB_Pixel XYZ_to_LAB(XYZ_Pixel xyz_value)
+        {
+            double Xn = 0.95047;
+            double Yn = 1.00000;
+            double Zn = 1.08883;
+
+            double fx = F(xyz_value.X / Xn);
+            double fy = F(xyz_value.Y / Yn);
+            double fz = F(xyz_value.Z / Zn);
+
+            // Вычисление L*, a*, b*
+            double l = 116.0 * fy - 16.0;
+            double a = 500.0 * (fx - fy);
+            double b = 200.0 * (fy - fz);
+
+            LAB_Pixel result = new LAB_Pixel();
+
+            result.L = l;
+            result.a = a;
+            result.b = b;
+
+            return result;
+        }
+
+        public XYZ_Pixel LAB_to_XYZ(LAB_Pixel lab_value)
+        {
+            double l = lab_value.L;
+            double a = lab_value.a;
+            double b = lab_value.b;
+
+            double delta = 6.0 / 29.0;
+
+            double fy = (l + 16.0) / 116.0;
+            double fx = a / 500.0 + fy;
+            double fz = fy - b / 200.0;
+
+            double x = fx > delta ? Math.Pow(fx, 3) : (fx - 16.0 / 116.0) * 3 * delta * delta;
+            double y = l > (8.0 * delta) ? Math.Pow((l + 16.0) / 116.0, 3) : l / (3.0 * delta * delta);
+            double z = fz > delta ? Math.Pow(fz, 3) : (fz - 16.0 / 116.0) * 3 * delta * delta;
+
+            // D65 белая точка
+            x *= 0.95047;
+            y *= 1.00000;
+            z *= 1.08883;
+
+            XYZ_Pixel result = new XYZ_Pixel();
+
+            result.X = x;
+            result.Y = y;
+            result.Z = z;
+
+            return result;
+        }
+
         public RGB_Pixel XYZ_to_sRGB(XYZ_Pixel xyz)
 		{
 			RGB_Pixel result = new RGB_Pixel();
