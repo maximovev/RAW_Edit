@@ -11,10 +11,6 @@ using System.Text;
 
 namespace MaxssauLibraries
 {
-    internal class classLibRawDLL
-    {
-    }
-
     class classRAWLib
     {
         private const string LibraryName = "libraw";

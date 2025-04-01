@@ -16,7 +16,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace image_designer
+namespace MaxssauLibraries
 {
 
     public class ClassAddToLog

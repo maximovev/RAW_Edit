@@ -12,7 +12,7 @@ using MaxssauLibraries;
 
 namespace RAW_Edit
 {
-    public partial class frmSettings : Form
+    public partial class frmSettings : Form 
     {
 
         public SettingsManager Settings;
@@ -20,6 +20,7 @@ namespace RAW_Edit
         public OperationStatus Status;
 
         private string ModuleName = "Application";
+
         public ClassLogger Logger;
         private void AddToLog(Exception ex)
         {
