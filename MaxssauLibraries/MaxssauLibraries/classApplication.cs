@@ -1,10 +1,16 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: maxss
- * Date: 01.05.2024
- * Time: 18:26
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
+
+maxssau
+
+Maximov Evgeny
+9890175@mail.ru
+Russia, Samara
+
+2024/05/01 - first edit
+2025/04/01 - refactoring
+
+Logger
+
  */
 using System;
 using System.IO;
@@ -16,6 +22,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace image_designer
 {
+
 	/// <summary>
 	/// Description of classApplication.
 	/// </summary>
@@ -27,7 +34,7 @@ namespace image_designer
         public RAW_ConversionStages ConversionStageSetup = new RAW_ConversionStages();
 		public RAW_ConversionSetup ConversionSetup = new RAW_ConversionSetup();
 		public RAW_Converter_Output_Type OutputType;
-		private classLogger Logger;
+		private ClassLogger Logger;
 		public InputRAWImage RawImage = new InputRAWImage();
 		public ImagePack ImageOutput = new ImagePack();
 		public WhiteBalanceRGBAvg WB_rgb = new WhiteBalanceRGBAvg();
@@ -44,10 +51,10 @@ namespace image_designer
         }
     }
 
-	public class classApplication
-	{
-		public classLogger log;
-		
+	public class classApplication: ClassAddToLog
+    {
+        private string ModuleName = "Application";
+        		
 		public string Log_module_name="App";
 
         private string modulename = "DCP Loader";
@@ -67,18 +74,7 @@ namespace image_designer
             }
             catch(Exception ex)
 			{
-                if (log != null)
-                {
-					
-                    if (log.status == classLogger.STATUS.OPEN)
-                    {
-                        log.add_to_log(modulename, ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            log.add_to_log(modulename, ex.StackTrace.ToString());
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
 				return OperationStatus.STATUS_FAIL;
             }
 		}

@@ -2,8 +2,10 @@
 
 namespace MaxssauLibraries
 {
-    public class classRAWReader
+    public class classRAWReader: ClassAddToLog
     {
+        private string ModuleName = "RAW Reader v0.1";
+
         public enum Errors
         { 
             Errors_Success=0,
@@ -24,7 +26,7 @@ namespace MaxssauLibraries
         }
 
 
-        public classRAWReader(string filename, ref classLogger logger)
+        public classRAWReader(string filename, ClassLogger logger)
         {
             try
             {
@@ -34,23 +36,23 @@ namespace MaxssauLibraries
                     Status = StatusResult.Null;
                     return;
                 }
+                else
+                {
+                    Logger = logger;
+
+
+
+
+                    Status = StatusResult.Success;
+                    return;
+                }
             }
             catch (Exception ex)
             {
                 LastError = Errors.Errors_Exception;
                 Status = StatusResult.Failed;
 
-                if(logger!=null)
-                {
-                    if(logger.status==classLogger.STATUS.OPEN)
-                    {
-                        logger.add_to_log("RawReader",ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            logger.add_to_log("RawReader", ex.StackTrace.ToString());
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
             }
         }
     }

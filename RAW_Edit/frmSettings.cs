@@ -16,9 +16,25 @@ namespace RAW_Edit
     {
 
         public SettingsManager Settings;
-        public classLogger Logger;
+
         public OperationStatus Status;
 
+        private string ModuleName = "Application";
+        public ClassLogger Logger;
+        private void AddToLog(Exception ex)
+        {
+            if (Logger != null)
+            {
+                if (Logger.Status == ClassLogger.LogStatus.Open)
+                {
+                    Logger.AddToLog(ModuleName, ex.Message);
+                    if (ex.StackTrace != null)
+                    {
+                        Logger.AddToLog(ModuleName, ex.StackTrace);
+                    }
+                }
+            }
+        }
 
         public frmSettings()
         {
@@ -41,14 +57,7 @@ namespace RAW_Edit
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Form Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Form Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }
@@ -87,14 +96,7 @@ namespace RAW_Edit
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Form Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Form Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }

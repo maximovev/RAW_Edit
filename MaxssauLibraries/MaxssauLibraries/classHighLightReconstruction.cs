@@ -7,10 +7,10 @@ using image_designer;
 
 namespace MaxssauLibraries
 {
-    public class classHighLightReconstruction
+    public class classHighLightReconstruction: ClassAddToLog
     {
 
-        public classLogger Logger;
+        private string ModuleName = "HighLight Reconstruction";
 
         public enum HighLightReconstructionMode
         {
@@ -18,7 +18,7 @@ namespace MaxssauLibraries
             ModeGrayFill=1
         }
 
-        public classHighLightReconstruction(classLogger logger)
+        public classHighLightReconstruction(ClassLogger logger)
         {
             Logger = logger;
         }
@@ -47,17 +47,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("HighLight Reconstruction", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("HighLight Reconstruction", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }
         }
@@ -121,17 +111,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("HighLight Reconstruction", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("HighLight Reconstruction", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }
         }
@@ -149,18 +129,7 @@ namespace MaxssauLibraries
             }
             catch(Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("HighLight Reconstruction", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("HighLight Reconstruction", ex.StackTrace);
-                        }
-}
-                }
-                
+                AddToLog(ex, ModuleName);
             }
             return OperationStatus.STATUS_FAIL;
         }
@@ -181,17 +150,7 @@ namespace MaxssauLibraries
             }
             catch(Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("HighLight Reconstruction", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("HighLight Reconstruction", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }           
         }

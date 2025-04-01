@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MaxssauLibraries
 {
-    public class classWBCorrection
+    public class classWBCorrection: ClassAddToLog
     {
-        private classLogger Logger;
+        private string ModuleName = "WB Correction";
 
-        public classWBCorrection(classLogger logger)
+        public classWBCorrection(ClassLogger logger)
         {
             Logger = logger;
         }
@@ -137,17 +137,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("WB Calculator", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("WB Calculator", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }
         }

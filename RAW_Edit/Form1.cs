@@ -40,7 +40,24 @@ namespace RAW_Edit
 
     public partial class Form1 : Form
     {
-        private classLogger logger = new classLogger();
+        private string ModuleName = "Main Form";
+        private ClassLogger Logger;
+        private void AddToLog(Exception ex)
+        {
+            if (Logger != null)
+            {
+                if (Logger.Status == ClassLogger.LogStatus.Open)
+                {
+                    Logger.AddToLog(ModuleName, ex.Message);
+                    if (ex.StackTrace != null)
+                    {
+                        Logger.AddToLog(ModuleName, ex.StackTrace);
+                    }
+                }
+            }
+        }
+
+
         private classApplication app = new classApplication();
 
         private LibRawProcessor raw_data_file;
@@ -67,7 +84,7 @@ namespace RAW_Edit
 
         }
 
-        private void LoadCMSettings(string setting_name, ref SettingsManager Settings, ref classXMLCMReader DCP_CM_Settings, ref _SettingsStatus SettingsStatus, ref classLogger logger, ref OperationStatus Status)
+        private void LoadCMSettings(string setting_name, ref SettingsManager Settings, ref classXMLCMReader DCP_CM_Settings, ref _SettingsStatus SettingsStatus, ref ClassLogger logger, ref OperationStatus Status)
         {
             if (Settings != null)
             {
@@ -86,14 +103,7 @@ namespace RAW_Edit
                     }
                     catch (Exception ex)
                     {
-                        if (logger != null)
-                        {
-                            logger.add_to_log("Load CM file: conversion", ex.Message);
-                            if (ex.StackTrace != null)
-                            {
-                                logger.add_to_log("Load CM file: conversion", ex.StackTrace);
-                            }
-                        }
+                        AddToLog(ex);
                         Status = OperationStatus.STATUS_FAIL;
                     }
                 }
@@ -102,15 +112,15 @@ namespace RAW_Edit
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            logger.app_path = app.GetCurrentFolder();
-            logger.file_name = app.GetTimeStamp() + ".log";
-            logger.open_log(classLogger.FILE_MODE.APPEND);
-            app.log = logger;
+            Logger =new ClassLogger( app.GetCurrentFolder(),app.GetTimeStamp() );
+            Logger.OpenLog(ClassLogger.FileMode.Append);
+            
+            app.Logger = Logger;
 
-            Settings = new("config.xml", ref logger);
+            Settings = new("config.xml", ref Logger);
             Settings.LoadSettings();
 
-            LoadCMSettings("ColorMatrixFile", ref Settings, ref DCP_CM_Settings, ref SettingsStatus, ref logger, ref Status);
+            LoadCMSettings("ColorMatrixFile", ref Settings, ref DCP_CM_Settings, ref SettingsStatus, ref Logger, ref Status);
 
             cmbBitDepth.SelectedIndex = 0;
 
@@ -195,11 +205,7 @@ namespace RAW_Edit
             }
             catch (Exception ex)
             {
-                logger.add_to_log("Open File", ex.Message);
-                if (ex.StackTrace != null)
-                {
-                    logger.add_to_log("Open File", ex.StackTrace);
-                }
+                AddToLog(ex);
                 process_result = image_processing_result.process_fail;
             }
         }
@@ -215,7 +221,7 @@ namespace RAW_Edit
                         form.image_edit = image_edit;
                         form.raw_image = raw_image;
                         form.Settings = Settings;
-                        form.Logger = logger;
+                        form.Logger = Logger;
                         form.MdiParent = this;
                         form.DCP_CM_Settings = DCP_CM_Settings;
                         form.CM_Selected_Profile = cmbCMProfile.SelectedIndex;
@@ -247,7 +253,7 @@ namespace RAW_Edit
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmSettings frmSettings = new frmSettings();
-            frmSettings.Logger = logger;
+            frmSettings.Logger = Logger;
             frmSettings.Settings = Settings;
             frmSettings.ShowDialog();
         }

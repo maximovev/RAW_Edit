@@ -22,6 +22,22 @@ namespace RAW_Edit
 
     public partial class frmEdit : Form
     {
+        private string ModuleName = "Form Edit"; 
+        public ClassLogger Logger;
+        private void AddToLog(Exception ex)
+        {
+            if (Logger != null)
+            {
+                if (Logger.Status == ClassLogger.LogStatus.Open)
+                {
+                    Logger.AddToLog(ModuleName, ex.Message);
+                    if (ex.StackTrace != null)
+                    {
+                        Logger.AddToLog(ModuleName, ex.StackTrace);
+                    }
+                }
+            }
+        }
 
 
         public Processing_Image image_edit;
@@ -29,7 +45,6 @@ namespace RAW_Edit
         public InputRAWImage     raw_image;
 
         public SettingsManager Settings;
-        public classLogger Logger;
         public OperationStatus Status;
 
         public classDCPXMLReader DCP_data;
@@ -54,17 +69,7 @@ namespace RAW_Edit
             }
             catch (Exception ex)
             {
-                if(Logger!=null)
-                {
-                    if(Logger.status==classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("RAW Converter", ex.Message);
-                        if(ex.StackTrace!=null)
-                        {
-                            Logger.add_to_log("RAW Converter", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex);
             }
         }
 
@@ -93,17 +98,7 @@ namespace RAW_Edit
             }
             catch(Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("RAW Converter", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("RAW Converter", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex);
             }
         }
 
@@ -148,17 +143,7 @@ namespace RAW_Edit
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("Save Image File", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("Save Image File", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex);
             }
         }
 

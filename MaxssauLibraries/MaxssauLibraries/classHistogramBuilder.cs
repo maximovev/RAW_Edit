@@ -7,14 +7,15 @@ using image_designer;
 
 namespace MaxssauLibraries
 {
-    public class classHistogramBuilder
+    public class classHistogramBuilder: ClassAddToLog
     {
+        private string ModuleName = "Histogram Builder";
+
         private List<double> Values=new List<double>();
 
         public int[] result;
 
-        private classLogger Logger;
-        public classHistogramBuilder(classLogger logger)
+        public classHistogramBuilder(ClassLogger logger)
         {
             Logger = logger;
             result=new int[1];
@@ -57,17 +58,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("Histogram builder", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("Histogram builder", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }
         }
@@ -81,17 +72,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("Histogram builder", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("Histogram builder", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }
         }
@@ -103,19 +84,9 @@ namespace MaxssauLibraries
                 Values.Add(value);
                 return OperationStatus.STATUS_OK;
             }
-            catch (Exception ex)
+            catch (Exception ex)    
             {
-                if (Logger != null)
-                {
-                    if (Logger.status == classLogger.STATUS.OPEN)
-                    {
-                        Logger.add_to_log("Histogram builder", ex.Message);
-                        if (ex.StackTrace != null)
-                        {
-                            Logger.add_to_log("Histogram builder", ex.StackTrace);
-                        }
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 return OperationStatus.STATUS_FAIL;
             }
         }

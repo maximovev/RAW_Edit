@@ -1,4 +1,17 @@
-﻿using System;
+﻿/*
+
+maxssau
+
+Maximov Evgeny
+9890175@mail.ru
+Russia, Samara
+
+2025/03/20 - first edit
+2025/04/01 - refactoring
+
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -9,20 +22,20 @@ using image_designer;
 namespace MaxssauLibraries
 {
 
-    public class SettingsManager
+    public class SettingsManager: ClassAddToLog
     {
+        private string ModuleName = "Settings Manager";
+
         // Список для хранения настроек
         public List<Setting> Settings { get; set; } = new List<Setting>();
 
         // Путь к файлу
         private string filePath;
 
-        private classLogger Logger=null;
-
         public OperationStatus Status;
 
         // Конструктор
-        public SettingsManager(string filePath, ref classLogger logger)
+        public SettingsManager(string filePath, ref ClassLogger logger)
         {
             Logger = logger;
             this.filePath = filePath;
@@ -33,14 +46,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }
@@ -64,14 +70,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }
@@ -94,14 +93,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }
@@ -123,14 +115,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
                 return "";
             }
@@ -160,14 +145,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }
@@ -186,14 +164,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }
@@ -227,14 +198,7 @@ namespace MaxssauLibraries
             }
             catch (Exception ex)
             {
-                if (Logger != null)
-                {
-                    Logger.add_to_log("Settings: conversion", ex.Message);
-                    if (ex.StackTrace != null)
-                    {
-                        Logger.add_to_log("Settings: conversion", ex.StackTrace);
-                    }
-                }
+                AddToLog(ex, ModuleName);
                 Status = OperationStatus.STATUS_FAIL;
             }
         }

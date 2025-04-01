@@ -1,10 +1,16 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: maxss
- * Date: 25.05.2024
- * Time: 21:01
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
+
+maxssau
+
+Maximov Evgeny
+9890175@mail.ru
+Russia, Samara
+
+2024/05/25 - first edit
+2025/04/01 - refactoring
+
+Logger
+
  */
 using System;
 
