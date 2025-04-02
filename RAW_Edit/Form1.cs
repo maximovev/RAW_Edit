@@ -6,6 +6,7 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using System.ComponentModel;
 using System.Threading;
+using static MaxssauLibraries.classLibRAW;
 
 namespace RAW_Edit
 {

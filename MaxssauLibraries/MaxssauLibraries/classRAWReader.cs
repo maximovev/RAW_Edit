@@ -34,6 +34,8 @@ namespace MaxssauLibraries
         {
             try
             {
+                libraw_iparams_t libraw_Iparams_T = new libraw_iparams_t();
+
                 var libraw_handler=libraw_init(LibRaw_init_flags.LIBRAW_OPTIONS_NONE);
                 libraw_set_demosaic(libraw_handler, LibRaw_interpolation_quality.VNG);
                 libraw_set_output_bps(libraw_handler, LibRaw_output_bps.BPS16);
@@ -47,6 +49,7 @@ namespace MaxssauLibraries
                         libraw_result = libraw_raw2image(libraw_handler);
                         if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                         {
+                            
                             
                         }
                     }
