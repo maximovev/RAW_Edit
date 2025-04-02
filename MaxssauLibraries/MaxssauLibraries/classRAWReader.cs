@@ -1,10 +1,15 @@
 ﻿using image_designer;
+using static MaxssauLibraries.classLibRAW;
 
 namespace MaxssauLibraries
 {
     public class classRAWReader: ClassAddToLog
     {
         private string ModuleName = "RAW Reader v0.1";
+
+        private classLibRAW Libraw = new classLibRAW();
+
+        LibRaw_errors libraw_result = 0;
 
         public enum Errors
         { 
@@ -25,8 +30,43 @@ namespace MaxssauLibraries
             Null=2
         }
 
+        public OperationStatus OpenRAW(string filename)
+        {
+            try
+            {
+                var libraw_handler=libraw_init(LibRaw_init_flags.LIBRAW_OPTIONS_NONE);
+                libraw_set_demosaic(libraw_handler, LibRaw_interpolation_quality.VNG);
+                libraw_set_output_bps(libraw_handler, LibRaw_output_bps.BPS16);
+                libraw_set_output_color(libraw_handler, LibRaw_output_color.RAW);
+                libraw_result = libraw_open_file(libraw_handler, filename);
+                if(libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
+                {
+                    libraw_result = libraw_unpack(libraw_handler);
+                    if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
+                    {
+                        libraw_result = libraw_raw2image(libraw_handler);
+                        if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
+                        {
+                            
+                        }
+                    }
+                    libraw_close(libraw_handler);
+                    return OperationStatus.STATUS_FAIL;
+                }
+                else
+                {
+                    Status = StatusResult.Failed;
+                    return OperationStatus.STATUS_FAIL;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddToLog(ex, ModuleName);
+                return OperationStatus.STATUS_FAIL;
+            }
+        }
 
-        public classRAWReader(string filename, ClassLogger logger)
+        public classRAWReader(ClassLogger logger)
         {
             try
             {
@@ -39,9 +79,6 @@ namespace MaxssauLibraries
                 else
                 {
                     Logger = logger;
-
-
-
 
                     Status = StatusResult.Success;
                     return;

@@ -139,8 +139,10 @@ namespace RAW_Edit
             {
                 image_edit.file_name = dlgOpenFile.FileName;
                 tlbStatus.Text = "Open file...";
-                bwOpenFile.RunWorkerAsync();
-
+                //bwOpenFile.RunWorkerAsync();
+                classRAWReader raw_reader = new classRAWReader(Logger);
+                raw_reader.OpenRAW(image_edit.file_name);
+                
 
             }
         }
