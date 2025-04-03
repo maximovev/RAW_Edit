@@ -1,5 +1,6 @@
 ﻿using image_designer;
 using static MaxssauLibraries.classLibRAW;
+using static System.Runtime.InteropServices.Marshal;
 
 namespace MaxssauLibraries
 {
@@ -47,7 +48,31 @@ namespace MaxssauLibraries
                         libraw_result = libraw_raw2image(libraw_handler);
                         if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                         {
-                            
+                            var piparam = libraw_get_iparams(libraw_handler);
+                            var iparam = PtrToStructure<libraw_iparams_t>(piparam);
+                            var poparam = libraw_get_imgother(libraw_handler);
+                            var oparam = PtrToStructure<libraw_imgother_t>(poparam);
+                            var errc = 0;
+                            var ptr = libraw_dcraw_make_mem_image(libraw_handler, ref errc);
+                            var img = PtrToStructure<libraw_processed_image_t>(ptr);
+
+                            // rqeuired step before accessing the "data" array
+                            Array.Resize(ref img.data, (int)img.data_size);
+                            var adr = ptr + OffsetOf(typeof(libraw_processed_image_t), "data").ToInt32();
+                            Copy(adr, img.data, 0, (int)img.data_size);
+
+                            // calculate padding for lines and add padding
+                            var num = img.width % 4;
+                            var padding = new byte[num];
+                            var stride = img.width * img.colors * (img.bits / 8);
+                            var line = new byte[stride];
+                            var tmp = new List<byte>();
+                            for (var i = 0; i < img.height; i++)
+                            {
+                                Buffer.BlockCopy(img.data, stride * i, line, 0, stride);
+                                tmp.AddRange(line);
+                                tmp.AddRange(padding);
+                            }
                         }
                     }
                     libraw_close(libraw_handler);
