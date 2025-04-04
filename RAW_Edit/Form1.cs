@@ -134,7 +134,7 @@ namespace RAW_Edit
 
         private void toolButtonOpen_Click(object sender, EventArgs e)
         {
-            dlgOpenFile.Filter = "RAW Files|*.jpg;*.tif;*.tiff";
+            dlgOpenFile.Filter = "RAW Files|*.nef;*.cr2;*.arw";
             dlgOpenFile.ShowDialog();
             if (dlgOpenFile.FileName != "")
             {
