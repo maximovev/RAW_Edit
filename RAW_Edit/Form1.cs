@@ -143,8 +143,9 @@ namespace RAW_Edit
                 //bwOpenFile.RunWorkerAsync();
                 classRAWReader raw_reader = new classRAWReader(Logger);
                 raw_reader.OpenRAW(image_edit.file_name);
-                
-
+                frmEdit formEdit=new frmEdit();
+                formEdit.raw_image=raw_reader.RAWImage;
+                formEdit.Show();
             }
         }
 

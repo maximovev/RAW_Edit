@@ -1,4 +1,5 @@
 ﻿using image_designer;
+using System.Drawing.Imaging;
 using static MaxssauLibraries.classLibRAW;
 using static System.Runtime.InteropServices.Marshal;
 
@@ -24,6 +25,8 @@ namespace MaxssauLibraries
 
         StatusResult Status;
 
+        public InputRAWImage RAWImage;
+
         public enum StatusResult
         {
             Success=0,
@@ -35,13 +38,19 @@ namespace MaxssauLibraries
         {
             try
             {
+                
+
                 libraw_iparams_t libraw_Iparams_T = new libraw_iparams_t();
 
+                var errc = 0;
+
                 var libraw_handler=libraw_init(LibRaw_init_flags.LIBRAW_OPTIONS_NONE);
+                libraw_result = libraw_open_file(libraw_handler, filename);
+
                 libraw_set_demosaic(libraw_handler, LibRaw_interpolation_quality.VNG);
                 libraw_set_output_bps(libraw_handler, LibRaw_output_bps.BPS16);
                 libraw_set_output_color(libraw_handler, LibRaw_output_color.RAW);
-                libraw_result = libraw_open_file(libraw_handler, filename);
+                
                 if(libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                 {
                     libraw_result = libraw_unpack(libraw_handler);
@@ -50,7 +59,61 @@ namespace MaxssauLibraries
                         libraw_result = libraw_raw2image(libraw_handler);
                         if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                         {
-                            
+                            if (libraw_result == libraw_dcraw_process(libraw_handler))
+                            {
+                                var ptr = libraw_dcraw_make_mem_image(libraw_handler, ref errc);
+                                var img = PtrToStructure<libraw_processed_image_t>(ptr);
+
+                                // rqeuired step before accessing the "data" array
+                                Array.Resize(ref img.data, (int)img.data_size);
+                                var adr = ptr + OffsetOf(typeof(libraw_processed_image_t), "data").ToInt32();
+                                Copy(adr, img.data, 0, (int)img.data_size);
+
+                                RAWImage = new InputRAWImage();
+
+                                RAWImage.Image_Input_MinMaxLevels = new RGB_MinMaxValues();
+
+                                RAWImage.ImageHeight=img.height;
+                                RAWImage.ImageWidth=img.width;
+                                RAWImage.Image_Input_RAW_RGB = new RGB_Pixel[RAWImage.ImageWidth, RAWImage.ImageHeight];
+
+                                for(int x=0;x< RAWImage.ImageWidth;x++)
+                                {
+                                    for(int y=0;y< RAWImage.ImageHeight;y++)
+                                    {
+                                        int coord = y * RAWImage.ImageWidth + x;
+                                        ushort R = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 0], (byte)img.data[coord + 1] });
+                                        ushort G = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 2], (byte)img.data[coord + 3] });
+                                        ushort B = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 4], (byte)img.data[coord + 5] });
+                                        RAWImage.Image_Input_RAW_RGB[x, y].R = (double)R;
+                                        RAWImage.Image_Input_RAW_RGB[x, y].G = (double)G;
+                                        RAWImage.Image_Input_RAW_RGB[x, y].B = (double)B;
+                                    }
+                                }
+                                /*
+                                // calculate padding for lines and add padding
+                                var num = img.width % 4;
+                                var padding = new byte[num];
+                                var stride = img.width * img.colors * (img.bits / 8);
+                                var line = new byte[stride];
+                                var tmp = new List<byte>();
+                                for (var i = 0; i < img.height; i++)
+                                {
+                                    Buffer.BlockCopy(img.data, stride * i, line, 0, stride);
+                                    tmp.AddRange(line);
+                                    tmp.AddRange(padding);
+                                }*/
+                                // release memory allocated by [libraw_dcraw_make_mem_image]
+                                libraw_dcraw_clear_mem(ptr);
+                                // create/save bitmap from mem image/array
+                                /*var bmp = new Bitmap(img.width, img.height, PixelFormat.Format24bppRgb);
+                                var bmd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+                                Copy(tmp.ToArray(), 0, bmd.Scan0, (int)img.data_size);
+                                bmp.UnlockBits(bmd);
+                                var outJPEG = "out.jpg";
+                                //Console.WriteLine("Saving image to: " + outJPEG);
+                                bmp.Save(outJPEG, ImageFormat.Jpeg);*/
+                            }
                         }
                     }
                     libraw_close(libraw_handler);
