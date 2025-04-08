@@ -150,12 +150,12 @@ namespace RAW_Edit
         private void frmEdit_Load(object sender, EventArgs e)
         {
             
-            Bitmap bitmap = new Bitmap(image_edit.width, image_edit.height);
+            Bitmap bitmap = new Bitmap(raw_image.ImageWidth, raw_image.ImageHeight);
             image = bitmap;
 
             raw_processor = new classRAWConverter(ref Logger);
 
-            raw_processor.ConversionStageSetup.ClipImageData = true;
+            raw_processor.ConversionStageSetup.ClipImageData = false;
             raw_processor.ConversionStageSetup.LinearizeData = true;
             raw_processor.ConversionStageSetup.BlackSubstract = true;
             raw_processor.ConversionStageSetup.WhiteBalanceCorrection = true;
@@ -184,11 +184,7 @@ namespace RAW_Edit
 
             workerThread.RunWorkerCompleted += Worker_Complete;
 
-
-
             workerThread.RunWorkerAsync();
-
-
 
             PreviewWindowUpdateControls();
             ReDrawImage();

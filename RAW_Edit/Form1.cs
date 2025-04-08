@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using System.ComponentModel;
 using System.Threading;
 using static MaxssauLibraries.classLibRAW;
+using System.Windows.Forms;
 
 namespace RAW_Edit
 {
@@ -113,7 +114,7 @@ namespace RAW_Edit
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Logger =new ClassLogger( app.GetCurrentFolder(),app.GetTimeStamp() );
+            Logger =new ClassLogger( app.GetCurrentFolder(),app.GetTimeStamp()+".txt" );
             Logger.OpenLog(ClassLogger.FileMode.Append);
             
             app.Logger = Logger;
@@ -144,7 +145,17 @@ namespace RAW_Edit
                 classRAWReader raw_reader = new classRAWReader(Logger);
                 raw_reader.OpenRAW(image_edit.file_name);
                 frmEdit formEdit=new frmEdit();
+
                 formEdit.raw_image=raw_reader.RAWImage;
+
+                //form.image_edit = image_edit;
+
+                formEdit.Settings = Settings;
+                formEdit.Logger = Logger;
+                formEdit.MdiParent = this;
+                formEdit.DCP_CM_Settings = DCP_CM_Settings;
+                formEdit.CM_Selected_Profile = cmbCMProfile.SelectedIndex;
+
                 formEdit.Show();
             }
         }

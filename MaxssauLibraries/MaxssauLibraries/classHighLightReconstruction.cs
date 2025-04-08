@@ -31,7 +31,7 @@ namespace MaxssauLibraries
         {
             try
             {
-                result.reset();
+                result.Reset();
 
                 for(int x=0;x<width; x++)
                 {

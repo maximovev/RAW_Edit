@@ -77,17 +77,26 @@ namespace MaxssauLibraries
                                 RAWImage.ImageWidth=img.width;
                                 RAWImage.Image_Input_RAW_RGB = new RGB_Pixel[RAWImage.ImageWidth, RAWImage.ImageHeight];
 
-                                for(int x=0;x< RAWImage.ImageWidth;x++)
+                                RAWImage.Image_Input_MinMaxLevels.Reset();
+
+                                for (int x=0;x< RAWImage.ImageWidth;x++)
                                 {
                                     for(int y=0;y< RAWImage.ImageHeight;y++)
                                     {
                                         int coord = y * RAWImage.ImageWidth + x;
+                                        
                                         ushort R = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 0], (byte)img.data[coord + 1] });
                                         ushort G = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 2], (byte)img.data[coord + 3] });
                                         ushort B = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 4], (byte)img.data[coord + 5] });
+
+                                        /*ushort R = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 1], (byte)img.data[coord + 0] });
+                                        ushort G = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 3], (byte)img.data[coord + 2] });
+                                        ushort B = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 5], (byte)img.data[coord + 4] });*/
+
                                         RAWImage.Image_Input_RAW_RGB[x, y].R = (double)R;
                                         RAWImage.Image_Input_RAW_RGB[x, y].G = (double)G;
                                         RAWImage.Image_Input_RAW_RGB[x, y].B = (double)B;
+                                        RAWImage.Image_Input_MinMaxLevels.CalcRGB(RAWImage.Image_Input_RAW_RGB[x,y]);
                                     }
                                 }
                                 /*

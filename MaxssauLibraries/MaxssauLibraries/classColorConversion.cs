@@ -21,12 +21,25 @@ namespace image_designer
     /// </summary>
     /// 
 
-    public struct RGB_MinMaxValues
+    public class RGB_MinMaxValues
     {
+        public RGB_MinMaxValues()
+        {
+
+        }
+
         public Double_MaxValue R;
         public Double_MaxValue G;
         public Double_MaxValue B;
-        public void reset()
+
+        public void CalcRGB(RGB_Pixel pixel)
+        {
+            R.calc(pixel.R);
+            G.calc(pixel.G);
+            B.calc(pixel.B);
+        }
+
+        public void Reset()
         {
             R.reset();
             G.reset();

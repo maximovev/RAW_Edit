@@ -67,8 +67,8 @@ namespace MaxssauLibraries
                             RGB_MinMaxValues BlackSubstractRGB_MinMax = new RGB_MinMaxValues();
                             RGB_MinMaxValues WBRGB_MinMax = new RGB_MinMaxValues();
 
-                            BlackSubstractRGB_MinMax.reset();
-                            WBRGB_MinMax.reset();
+                            BlackSubstractRGB_MinMax.Reset();
+                            WBRGB_MinMax.Reset();
 
                             double bit_depth_max_level = 0;
 
@@ -98,6 +98,12 @@ namespace MaxssauLibraries
                                         BlackSubstractRGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
                                         BlackSubstractRGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
                                         BlackSubstractRGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
+                                    }
+                                    else
+                                    {
+                                        ImageOutput.Image_RGB[x, y].R = RawImage.Image_Input_RAW_RGB[x, y].R;
+                                        ImageOutput.Image_RGB[x, y].G = RawImage.Image_Input_RAW_RGB[x, y].G;
+                                        ImageOutput.Image_RGB[x, y].B = RawImage.Image_Input_RAW_RGB[x, y].B;
                                     }
 
                                     WB_rgb.add(ImageOutput.Image_RGB[x, y].R, ImageOutput.Image_RGB[x, y].G, ImageOutput.Image_RGB[x, y].B);
