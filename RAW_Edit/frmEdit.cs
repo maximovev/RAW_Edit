@@ -158,9 +158,9 @@ namespace RAW_Edit
             raw_processor.ConversionStageSetup.ClipImageData = false;
             raw_processor.ConversionStageSetup.LinearizeData = true;
             raw_processor.ConversionStageSetup.BlackSubstract = true;
-            raw_processor.ConversionStageSetup.WhiteBalanceCorrection = true;
+            raw_processor.ConversionStageSetup.WhiteBalanceCorrection =false;
             raw_processor.ConversionStageSetup.ColorTransform = true;
-            raw_processor.ConversionStageSetup.ApplyGamma = true;
+            raw_processor.ConversionStageSetup.ApplyGamma = false;
             raw_processor.ConversionStageSetup.UserBlackLevel = false;
             raw_processor.ConversionStageSetup.UseHighLightReconstructuion = false;
 

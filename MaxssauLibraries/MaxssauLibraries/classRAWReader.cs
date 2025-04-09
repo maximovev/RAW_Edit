@@ -47,18 +47,23 @@ namespace MaxssauLibraries
                 var libraw_handler=libraw_init(LibRaw_init_flags.LIBRAW_OPTIONS_NONE);
                 libraw_result = libraw_open_file(libraw_handler, filename);
 
-                libraw_set_demosaic(libraw_handler, LibRaw_interpolation_quality.VNG);
-                libraw_set_output_bps(libraw_handler, LibRaw_output_bps.BPS16);
-                libraw_set_output_color(libraw_handler, LibRaw_output_color.RAW);
+                
                 
                 if(libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                 {
                     libraw_result = libraw_unpack(libraw_handler);
                     if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                     {
-                        libraw_result = libraw_raw2image(libraw_handler);
+                        libraw_set_demosaic(libraw_handler, LibRaw_interpolation_quality.AHD);
+                        libraw_set_output_bps(libraw_handler, LibRaw_output_bps.BPS16);
+                        libraw_set_output_color(libraw_handler, LibRaw_output_color.RAW);
+                        libraw_set_gamma(libraw_handler, 0, 1);
+                        libraw_set_gamma(libraw_handler, 1, 1);
+
+                        //libraw_result = libraw_raw2image(libraw_handler);
                         if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
                         {
+                            
                             if (libraw_result == libraw_dcraw_process(libraw_handler))
                             {
                                 var ptr = libraw_dcraw_make_mem_image(libraw_handler, ref errc);
@@ -79,26 +84,41 @@ namespace MaxssauLibraries
 
                                 RAWImage.Image_Input_MinMaxLevels.Reset();
 
+                                int coord = 0;
+
+                                byte[] short_components = new byte[2];
+
                                 for (int x=0;x< RAWImage.ImageWidth;x++)
                                 {
                                     for(int y=0;y< RAWImage.ImageHeight;y++)
                                     {
-                                        int coord = y * RAWImage.ImageWidth + x;
-                                        
-                                        ushort R = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 0], (byte)img.data[coord + 1] });
-                                        ushort G = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 2], (byte)img.data[coord + 3] });
-                                        ushort B = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 4], (byte)img.data[coord + 5] });
+                                        coord = 6*(y * RAWImage.ImageWidth + x);
 
-                                        /*ushort R = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 1], (byte)img.data[coord + 0] });
-                                        ushort G = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 3], (byte)img.data[coord + 2] });
-                                        ushort B = BitConverter.ToUInt16(new byte[2] { (byte)img.data[coord + 5], (byte)img.data[coord + 4] });*/
+                                        short_components[0] = img.data[coord + 0];
+                                        short_components[1] = img.data[coord + 1];
+
+                                        int R = BitConverter.ToUInt16(short_components);
+                                        
+                                        short_components[0] = img.data[coord + 2];
+                                        short_components[1] = img.data[coord + 3];
+
+                                        int G = BitConverter.ToUInt16(short_components);
+
+                                        short_components[0] = img.data[coord + 4];
+                                        short_components[1] = img.data[coord + 5];
+
+                                        int B = BitConverter.ToUInt16(short_components);
 
                                         RAWImage.Image_Input_RAW_RGB[x, y].R = (double)R;
                                         RAWImage.Image_Input_RAW_RGB[x, y].G = (double)G;
                                         RAWImage.Image_Input_RAW_RGB[x, y].B = (double)B;
+
                                         RAWImage.Image_Input_MinMaxLevels.CalcRGB(RAWImage.Image_Input_RAW_RGB[x,y]);
                                     }
                                 }
+
+                                libraw_dcraw_clear_mem(ptr);
+                                GC.Collect();
                                 /*
                                 // calculate padding for lines and add padding
                                 var num = img.width % 4;
@@ -113,7 +133,7 @@ namespace MaxssauLibraries
                                     tmp.AddRange(padding);
                                 }*/
                                 // release memory allocated by [libraw_dcraw_make_mem_image]
-                                libraw_dcraw_clear_mem(ptr);
+
                                 // create/save bitmap from mem image/array
                                 /*var bmp = new Bitmap(img.width, img.height, PixelFormat.Format24bppRgb);
                                 var bmd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);

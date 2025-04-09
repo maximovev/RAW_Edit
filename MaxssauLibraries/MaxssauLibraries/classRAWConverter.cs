@@ -76,6 +76,49 @@ namespace MaxssauLibraries
 
                             WB_rgb.clear();
 
+                            double[,] cm_data = new double[3, 3];
+
+                            int selected_profile = CM_SelectedProfile;
+                            if (selected_profile >= DCP_CM_Settings.values.Count)
+                            {
+                                selected_profile = 0;
+                            }
+
+                            for (int i = 0; i < 3; i++)
+                            {
+                                for (int j = 0; j < 3; j++)
+                                {
+                                    cm_data[i, j] = DCP_CM_Settings.values[selected_profile].ColorMatrix[i, j];
+                                }
+                            }
+
+                            rgb_histogram_output.clear();
+
+                            double gamma = 2.4;
+                            byte[] gammaTable = new byte[256];
+                            for (int i = 0; i < 256; i++)
+                            {
+                                gammaTable[i] = (byte)Math.Min(255, (int)((255.0 * Math.Pow(i / 255.0, 1.0 / gamma)) + 0.5));
+                            }
+
+                            double bit_depth_coeff = 0;
+
+                            switch (RAW_bitdepth_coeff)
+                            {
+                                case BitDepthCoeff.RAW_12Bit:
+                                    {
+                                        bit_depth_coeff = 16;
+                                        bit_depth_max_level = 1024 * 1024;
+                                    }
+                                    break;
+                                case BitDepthCoeff.RAW_14Bit:
+                                    {
+                                        bit_depth_coeff = 4;
+                                        bit_depth_max_level = 262144;
+                                    }
+                                    break;
+                            }
+
                             for (int x = 0; x < RawImage.ImageWidth; x++)
                             {
                                 for (int y = 0; y < RawImage.ImageHeight; y++)
@@ -108,11 +151,7 @@ namespace MaxssauLibraries
 
                                     WB_rgb.add(ImageOutput.Image_RGB[x, y].R, ImageOutput.Image_RGB[x, y].G, ImageOutput.Image_RGB[x, y].B);
 
-                                    int selected_profile = CM_SelectedProfile;
-                                    if(selected_profile>= DCP_CM_Settings.values.Count)
-                                    {
-                                        selected_profile = 0;
-                                    }
+                                    
                                     if (ConversionStageSetup.WhiteBalanceCorrection == true)
                                     {
                                         ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * DCP_CM_Settings.values[selected_profile].WB_coeff[0];
@@ -123,24 +162,7 @@ namespace MaxssauLibraries
                                     
                                     if (ConversionStageSetup.ClipImageData == true)
                                     {
-                                        double bit_depth_coeff = 0;
                                         
-
-                                        switch (RAW_bitdepth_coeff)
-                                        {
-                                            case BitDepthCoeff.RAW_12Bit:
-                                                {
-                                                    bit_depth_coeff = 16;
-                                                    bit_depth_max_level = 1024*1024;
-                                                }
-                                                break;
-                                             case BitDepthCoeff.RAW_14Bit:
-                                                {
-                                                    bit_depth_coeff = 4;
-                                                    bit_depth_max_level = 262144;
-                                                }
-                                                break;
-                                        }
 
                                         ImageOutput.Image_RGB[x, y].R = Math.Min(bit_depth_max_level, ImageOutput.Image_RGB[x, y].R * bit_depth_coeff);
                                         ImageOutput.Image_RGB[x, y].G = Math.Min(bit_depth_max_level, ImageOutput.Image_RGB[x, y].G * bit_depth_coeff);
@@ -151,19 +173,10 @@ namespace MaxssauLibraries
                                     {
                                         double[] result = new double[3];
                                         double[] pixel = new double[3];
-                                        double[,] cm_data = new double[3,3];
-
+                                        
                                         pixel[0] = ImageOutput.Image_RGB[x, y].R;
                                         pixel[1] = ImageOutput.Image_RGB[x, y].G;
                                         pixel[2] = ImageOutput.Image_RGB[x, y].B;
-
-                                        for(int i = 0; i < 3; i++)
-                                        {
-                                            for (int j = 0; j < 3; j++)
-                                            {
-                                                cm_data[i, j] = DCP_CM_Settings.values[selected_profile].ColorMatrix[i, j];
-                                            }
-                                        }
                                         
                                         ColorConverter.MulMatrix3x3withM3(ref cm_data, ref result, pixel);
 
@@ -174,24 +187,14 @@ namespace MaxssauLibraries
                                 }
                             }
 
-                            if(ConversionStageSetup.UseHighLightReconstructuion==true)
+                            /*if(ConversionStageSetup.UseHighLightReconstructuion==true)
                             {
                                 classHighLightReconstruction hlr = new classHighLightReconstruction(Logger);
 
                                 hlr.HighLightReconstruction(classHighLightReconstruction.HighLightReconstructionMode.ModeGrayFill, ref ImageOutput.Image_RGB, RawImage.ImageHeight, RawImage.ImageWidth, bit_depth_max_level);
-                            }
+                            }*/
 
                             ColorConverter.NormalizeImageTo1(ref ImageOutput.Image_RGB, RawImage.ImageWidth, RawImage.ImageHeight);
-
-                            
-                            rgb_histogram_output.clear();
-
-                            double gamma = 2.4;
-                            byte[] gammaTable = new byte[256];
-                            for (int i = 0; i < 256; i++)
-                            {
-                                gammaTable[i] = (byte)Math.Min(255, (int)((255.0 * Math.Pow(i / 255.0, 1.0 / gamma)) + 0.5));
-                            }
 
 
                             for (int x = 0; x < RawImage.ImageWidth; x++)
