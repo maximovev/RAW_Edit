@@ -10,13 +10,6 @@ using SixLabors.ImageSharp.PixelFormats;
 namespace MaxssauLibraries
 {
 
-    
-
-    
-
-    
-
-
     public class classRAWConverter: ClassAddToLog
     {
         private string ModuleName = "RAW Converter v0.1";
@@ -72,7 +65,7 @@ namespace MaxssauLibraries
 
                             double bit_depth_max_level = 0;
 
-                            double raw_min_level = Math.Min(Math.Min(RawImage.Image_Input_MinMaxLevels.R.get_min(), RawImage.Image_Input_MinMaxLevels.G.get_min()) , RawImage.Image_Input_MinMaxLevels.B.get_min());
+                            double raw_min_level = Math.Min(Math.Min(RawImage.Image_Input_MinMaxLevels.R.get_min(), RawImage.Image_Input_MinMaxLevels.G.get_min()), RawImage.Image_Input_MinMaxLevels.B.get_min());
 
                             WB_rgb.clear();
 
@@ -119,8 +112,10 @@ namespace MaxssauLibraries
                                     break;
                             }
 
-                            for (int x = 0; x < RawImage.ImageWidth; x++)
+                            Parallel.For(0, RawImage.ImageWidth, x =>
                             {
+                                /*for (int x = 0; x < RawImage.ImageWidth; x++)
+                                {*/
                                 for (int y = 0; y < RawImage.ImageHeight; y++)
                                 {
                                     if (ConversionStageSetup.BlackSubstract == true)
@@ -149,9 +144,7 @@ namespace MaxssauLibraries
                                         ImageOutput.Image_RGB[x, y].B = RawImage.Image_Input_RAW_RGB[x, y].B;
                                     }
 
-                                    WB_rgb.add(ImageOutput.Image_RGB[x, y].R, ImageOutput.Image_RGB[x, y].G, ImageOutput.Image_RGB[x, y].B);
 
-                                    
                                     if (ConversionStageSetup.WhiteBalanceCorrection == true)
                                     {
                                         ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * DCP_CM_Settings.values[selected_profile].WB_coeff[0];
@@ -159,25 +152,24 @@ namespace MaxssauLibraries
                                         ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * DCP_CM_Settings.values[selected_profile].WB_coeff[2];
                                     }
 
-                                    
+
                                     if (ConversionStageSetup.ClipImageData == true)
                                     {
-                                        
 
                                         ImageOutput.Image_RGB[x, y].R = Math.Min(bit_depth_max_level, ImageOutput.Image_RGB[x, y].R * bit_depth_coeff);
                                         ImageOutput.Image_RGB[x, y].G = Math.Min(bit_depth_max_level, ImageOutput.Image_RGB[x, y].G * bit_depth_coeff);
-                                        ImageOutput.Image_RGB[x, y].B = Math.Min(bit_depth_max_level, ImageOutput.Image_RGB[x, y].B * bit_depth_coeff);                                        
+                                        ImageOutput.Image_RGB[x, y].B = Math.Min(bit_depth_max_level, ImageOutput.Image_RGB[x, y].B * bit_depth_coeff);
                                     }
 
-                                    if(ConversionStageSetup.ColorTransform == true)
+                                    if (ConversionStageSetup.ColorTransform == true)
                                     {
                                         double[] result = new double[3];
                                         double[] pixel = new double[3];
-                                        
+
                                         pixel[0] = ImageOutput.Image_RGB[x, y].R;
                                         pixel[1] = ImageOutput.Image_RGB[x, y].G;
                                         pixel[2] = ImageOutput.Image_RGB[x, y].B;
-                                        
+
                                         ColorConverter.MulMatrix3x3withM3(ref cm_data, ref result, pixel);
 
                                         ImageOutput.Image_RGB[x, y].R = result[0];
@@ -185,8 +177,9 @@ namespace MaxssauLibraries
                                         ImageOutput.Image_RGB[x, y].B = result[2];
                                     }
                                 }
-                            }
-
+                            });
+                            //}
+                        
                             /*if(ConversionStageSetup.UseHighLightReconstructuion==true)
                             {
                                 classHighLightReconstruction hlr = new classHighLightReconstruction(Logger);
