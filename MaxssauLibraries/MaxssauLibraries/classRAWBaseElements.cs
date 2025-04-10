@@ -240,6 +240,7 @@ namespace MaxssauLibraries
         public bool ApplyGamma;
         public bool UserBlackLevel;
         public bool UseHighLightReconstructuion;
+        public bool UseDCPToneCurve;
     }
 
     internal class classRAWBaseElements

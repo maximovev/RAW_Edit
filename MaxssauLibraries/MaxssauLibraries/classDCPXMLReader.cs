@@ -287,6 +287,10 @@ namespace MaxssauLibraries
 
             IEnumerable<XElement> profile_name = doc.Descendants("ProfileName");
 
+            IEnumerable<XElement> tone_curve = doc.Descendants("ToneCurve");
+
+            read_count = 0;
+
             read_count = 0;
             ReadHueSatDeltas(ref HueSatDeltas1, satdeltas1_data, ref read_count);
 			if(read_count>0)

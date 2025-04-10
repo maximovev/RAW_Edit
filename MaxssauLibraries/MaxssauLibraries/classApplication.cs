@@ -19,6 +19,7 @@ using System.Runtime.Intrinsics.Arm;
 using image_designer;
 using MaxssauLibraries;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Collections.Generic;
 
 namespace image_designer
 {
@@ -51,36 +52,32 @@ namespace image_designer
         }
     }
 
+	
+
+
+
 	public class classApplication: ClassAddToLog
     {
+
+		public Libraw_Settings	LibrawSettings=new Libraw_Settings();
+
         private string ModuleName = "Application";
         		
 		public string Log_module_name="App";
 
         private string modulename = "DCP Loader";
 
-        public OperationStatus LoadDCPFiles(ref string[] dcp_files)
+		public classDCPLoader DCP_Data;
+
+		public void LoadDCPData()
 		{
-            try
-            {
-				if(!Directory.Exists("DCP"))
-				{
-					Directory.CreateDirectory("DCP");
-				}
-
-				dcp_files = Directory.GetFiles("DCP", "*.dcp_xml");
-
-				return OperationStatus.STATUS_OK;
-            }
-            catch(Exception ex)
-			{
-                AddToLog(ex, ModuleName);
-				return OperationStatus.STATUS_FAIL;
-            }
+			DCP_Data = new classDCPLoader(Logger);
 		}
 
-		public classApplication()
+        public classApplication()
 		{
+
+			
 		}
 		
 		public string GetCurrentFolder()
@@ -123,5 +120,7 @@ namespace image_designer
 				}
 			}
 		}
+
+
 	}
 }

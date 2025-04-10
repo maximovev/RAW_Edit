@@ -1,8 +1,7 @@
 ﻿using image_designer;
-using System.Drawing.Imaging;
 using static MaxssauLibraries.classLibRAW;
 using static System.Runtime.InteropServices.Marshal;
-using System.Threading.Tasks;
+
 
 namespace MaxssauLibraries
 {
@@ -20,6 +19,7 @@ namespace MaxssauLibraries
         public LibRaw_output_formats output_format;
         public LibRaw_output_color output_color;
         public bool NoBrightness;
+        public bool UseToneCurve;
     }
 
     public class classRAWReader: ClassAddToLog
@@ -71,9 +71,13 @@ namespace MaxssauLibraries
                         libraw_set_demosaic(libraw_handler, settings.quality);
                         libraw_set_output_bps(libraw_handler, settings.output_bps);
                         libraw_set_output_color(libraw_handler, settings.output_color);
-                        libraw_set_no_auto_bright(libraw_handler, 0);
-                        libraw_set_gamma(libraw_handler, 0, 1);
-                        libraw_set_gamma(libraw_handler, 1, 1);
+                        libraw_set_no_auto_bright(libraw_handler, 1);
+                        
+                        if (settings.UseToneCurve == false)
+                        {
+                            libraw_set_gamma(libraw_handler, 0, 1);
+                            libraw_set_gamma(libraw_handler, 1, 1);    
+                        }
 
                         //libraw_result = libraw_raw2image(libraw_handler);
                         if (libraw_result == LibRaw_errors.LIBRAW_SUCCESS)
@@ -101,27 +105,11 @@ namespace MaxssauLibraries
                                 {
                                     for (int y = 0; y < RAWImage.ImageHeight; y++)
                                     {
-                                        byte[] short_components = new byte[2];
                                         int coord = 6 * (y * RAWImage.ImageWidth + x);
-                                            
-                                        short_components[0] = img.data[coord + 0];
-                                        short_components[1] = img.data[coord + 1];
-
-                                        int R = BitConverter.ToUInt16(short_components);
-
-                                        short_components[0] = img.data[coord + 2];
-                                        short_components[1] = img.data[coord + 3];
-
-                                        int G = BitConverter.ToUInt16(short_components);
-
-                                        short_components[0] = img.data[coord + 4];
-                                        short_components[1] = img.data[coord + 5];
-
-                                        int B = BitConverter.ToUInt16(short_components);
-
-                                        RAWImage.Image_Input_RAW_RGB[x, y].R = (double)R;
-                                        RAWImage.Image_Input_RAW_RGB[x, y].G = (double)G;
-                                        RAWImage.Image_Input_RAW_RGB[x, y].B = (double)B;
+                                        
+                                        RAWImage.Image_Input_RAW_RGB[x, y].R = (double)BitConverter.ToUInt16(new byte[] { (byte)img.data[coord + 0], (byte)img.data[coord + 1] });
+                                        RAWImage.Image_Input_RAW_RGB[x, y].G = (double)BitConverter.ToUInt16(new byte[] { (byte)img.data[coord + 2], (byte)img.data[coord + 3] });
+                                        RAWImage.Image_Input_RAW_RGB[x, y].B = (double)BitConverter.ToUInt16(new byte[] { (byte)img.data[coord + 4], (byte)img.data[coord + 5] });
 
                                         RAWImage.Image_Input_MinMaxLevels.CalcRGB(RAWImage.Image_Input_RAW_RGB[x, y]);
                                     }
