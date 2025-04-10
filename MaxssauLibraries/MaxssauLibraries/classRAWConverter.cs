@@ -219,43 +219,6 @@ namespace MaxssauLibraries
                             }
 
                             rgb_histogram_output.Calc();
-                            
-                            //ImageOutput.Image_RGB = ImageTemp.Image_RGB;
-
-                            /*double coeff = Math.Min(BlackSubstractRGB_MinMax.R.get_max(), Math.Min(BlackSubstractRGB_MinMax.G.get_max(), BlackSubstractRGB_MinMax.B.get_max()));
-
-                            double[] temp_rgb_in=new double[3];
-                            double[] temp_rgb_out = new double[3];
-
-
-                            for (int x = 0; x < RawImage.ImageWidth; x++)
-                            {
-                                for (int y = 0; y < RawImage.ImageHeight; y++)
-                                {
-                                    if (ConversionStageSetup.WhiteBalanceCorrection == true)
-                                    {
-                                        ImageTemp.Image_RGB[x, y].R = (ImageTemp.Image_RGB[x, y].R / coeff) / (WB_rgb.GetRCoeff());
-                                        ImageTemp.Image_RGB[x, y].G = (ImageTemp.Image_RGB[x, y].G / coeff) / (WB_rgb.GetGCoeff());
-                                        ImageTemp.Image_RGB[x, y].B = (ImageTemp.Image_RGB[x, y].B / coeff) / (WB_rgb.GetBCoeff());
-                                    }
-
-                                    // trunc data
-                                    ImageTemp.Image_RGB[x, y].R = Math.Min(1, ImageTemp.Image_RGB[x, y].R);
-                                    ImageTemp.Image_RGB[x, y].G = Math.Min(1, ImageTemp.Image_RGB[x, y].G);
-                                    ImageTemp.Image_RGB[x, y].B = Math.Min(1, ImageTemp.Image_RGB[x, y].B);
-
-                                    if(ConversionStageSetup.ColorTransform==true)
-                                    {
-                                        temp_rgb_in[0] = ImageTemp.Image_RGB[x, y].R;
-                                        temp_rgb_in[1] = ImageTemp.Image_RGB[x, y].G;
-                                        temp_rgb_in[2] = ImageTemp.Image_RGB[x, y].B;
-                                        ColorConverter.MulMatrix3x3withM3(ref DCP_data.ColorMatrix1.coeff, ref temp_rgb_out, temp_rgb_in);
-                                        ImageTemp.Image_XYZ[x, y].X = temp_rgb_out[0];
-                                        ImageTemp.Image_XYZ[x, y].Y = temp_rgb_out[1];
-                                        ImageTemp.Image_XYZ[x, y].Z = temp_rgb_out[2];
-                                    }
-                                }
-                            }*/
 
                             GC.Collect();
 
