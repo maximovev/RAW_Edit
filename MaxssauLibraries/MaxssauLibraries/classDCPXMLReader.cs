@@ -62,8 +62,8 @@ namespace MaxssauLibraries
 		{ 
 			public int count;
 			public int[] N;
-			public int[] h;
-            public int[] v;
+			public double[] h;
+            public double[] v;
         }
 
 
@@ -128,9 +128,64 @@ namespace MaxssauLibraries
 			return false;
 		}
 
-		void ReadHueSatDeltas(ref HueSatDeltas result, IEnumerable<XElement> node,ref int read_count)
+		void ReadToneCurve(ref Tone_Curve ToneCurve, IEnumerable<XElement> node, ref int read_count)
 		{
-            
+			ToneCurve = new Tone_Curve();
+            foreach (var attrib in node.Attributes())
+            {
+                if (attrib.Name.ToString() == "Size")
+                {
+                    int size = 0;
+                    if (int.TryParse(attrib.Value, out size))
+                    {
+                        ToneCurve.count = size;
+                        ToneCurve.h = new double[size];
+                        ToneCurve.v = new double[size];
+                        ToneCurve.N = new int[size];
+                    }
+                }
+            }
+
+			int N = 0;
+			double h = 0;
+			double v = 0;
+
+			int counter = 0;
+
+            foreach (var element in node.Elements())
+			{
+				foreach(var attrib in element.Attributes())
+				{
+					switch (attrib.Name.ToString())
+					{
+						case "N":
+							{
+								N=int.Parse(attrib.Value, new NumberFormatInfo{ NumberDecimalSeparator = "." });
+                            }
+                            break;
+						case "h":
+							{
+								h=double.Parse(attrib.Value, new NumberFormatInfo{ NumberDecimalSeparator = "." });
+                            }
+                            break;
+                        case "v":
+                            {
+                                v = double.Parse(attrib.Value, new NumberFormatInfo { NumberDecimalSeparator = "." });
+                            }
+                            break;
+                    }
+				}
+                if (ToneCurve.count != 0)
+                {
+                    ToneCurve.N[counter] = N;
+                    ToneCurve.h[counter] = h;
+                    ToneCurve.v[counter] = v;
+                }
+                counter++;
+            }
+		}
+		void ReadHueSatDeltas(ref HueSatDeltas result, IEnumerable<XElement> node,ref int read_count)
+		{				
             foreach (var element in node)
 			{
 				foreach (var attrib in element.Attributes())
@@ -290,6 +345,12 @@ namespace MaxssauLibraries
             IEnumerable<XElement> tone_curve = doc.Descendants("ToneCurve");
 
             read_count = 0;
+			ReadToneCurve(ref ToneCurve, tone_curve, ref read_count);
+			if (read_count > 0)
+			{
+				HasDCPData.HasToneCurve = true;
+			}
+
 
             read_count = 0;
             ReadHueSatDeltas(ref HueSatDeltas1, satdeltas1_data, ref read_count);
@@ -361,7 +422,6 @@ namespace MaxssauLibraries
 			}
 
         }
-
 
         public void classDCPXMLReader1(string filename)
 		{
@@ -461,9 +521,6 @@ namespace MaxssauLibraries
 		XmlDocument xml_file=new XmlDocument();
 		
 		public OperationStatus Status;
-		
-		
-		
 		
 	}
 }

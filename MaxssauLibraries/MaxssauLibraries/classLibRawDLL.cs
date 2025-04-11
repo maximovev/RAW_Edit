@@ -8,9 +8,38 @@ using System.Threading.Tasks;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using static MaxssauLibraries.classLibRAW;
 
 namespace MaxssauLibraries
 {
+
+    public static class LibRawImageSizesExtensions
+    {
+        public static Size GetRawSize(this libraw_image_sizes_t sizes)
+        {
+            return new Size(sizes.raw_width, sizes.raw_height);
+        }
+
+        public static Rectangle GetCropArea(this libraw_image_sizes_t sizes)
+        {
+            return new Rectangle(
+                sizes.left_margin,
+                sizes.top_margin,
+                sizes.width,
+                sizes.height);
+        }
+
+        public static bool IsRotated(this libraw_image_sizes_t sizes)
+        {
+            return sizes.flip == LibRawOrientation.ORIENTATION_90 ||
+                   sizes.flip == LibRawOrientation.ORIENTATION_270;
+        }
+
+        public static float GetBlackLevel(this libraw_image_sizes_t sizes, int channel = 0)
+        {
+            return sizes.sensor_levels.black[channel];
+        }
+    }
     public class classLibRAW
     {
         private const string LibraryName = "libraw";
@@ -256,6 +285,464 @@ namespace MaxssauLibraries
             LIBRAW_CAMERAMAKER_Zeiss,
             // Insert additional indexes here
             LIBRAW_CAMERAMAKER_TheLastOne
+        }
+
+        public static class LibRawDefines
+        {
+            public const int CBLACK_SIZE = 4102; // LIBRAW_CBLACK_SIZE (обычно 4102)
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_colordata_t
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10000)]
+            public ushort[] curve; // Кривая тонов (65,536 элементов)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = LibRawDefines.CBLACK_SIZE)]
+            public uint[] cblack; // Массив чёрных уровней
+
+            public uint black;        // Общий чёрный уровень
+            public uint data_maximum; // Максимальное значение данных
+            public uint maximum;      // Максимальное значение после коррекции
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public uint[] linear_max; // Максимальные линейные уровни (для Canon, Kodak и др.)
+
+            public float fmaximum; // Максимальное значение (float)
+            public float fnorm;    // Нормализация
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8 * 8)]
+            public ushort[] white; // Белые уровни (8x8 матрица)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public float[] cam_mul; // Множители камеры (баланс белого)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public float[] pre_mul; // Предварительные множители
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3 * 4)]
+            public float[] cmatrix; // Color matrix (3x4)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3 * 4)]
+            public float[] ccm;     // Color Correction Matrix (3x4)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3 * 4)]
+            public float[] rgb_cam; // RGB Camera matrix (3x4)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4 * 3)]
+            public float[] cam_xyz; // Camera XYZ matrix (4x3)
+
+            public ph1_t phase_one_data; // Данные Phase One (отдельная структура)
+
+            public float flash_used;      // Использование вспышки
+            public float canon_ev;        // Поправка экспозиции Canon
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string model2; // Дополнительное название модели
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string UniqueCameraModel; // Уникальное имя камеры
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string LocalizedCameraModel; // Локализованное имя модели
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string ImageUniqueID; // Уникальный ID изображения
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 17)]
+            public string RawDataUniqueID; // Уникальный ID RAW-данных
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string OriginalRawFileName; // Исходное имя RAW-файла
+
+            public IntPtr profile;           // Указатель на ICC-профиль
+            public uint profile_length;      // Размер профиля
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            public uint[] black_stat; // Статистика чёрного
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public libraw_dng_color_t[] dng_color; // DNG color info
+
+            public libraw_dng_levels_t dng_levels; // DNG уровни
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256 * 4)]
+            public int[] WB_Coeffs; // Коэффициенты баланса белого (R, G1, B, G2)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64 * 5)]
+            public float[] WBCT_Coeffs; // Коэффициенты WB по цветовой температуре (CCT, R, G1, B, G2)
+
+            public int as_shot_wb_applied; // Был ли применён баланс белого "как в камере"
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public libraw_P1_color_t[] P1_color; // Phase One color data
+
+            public uint raw_bps; // Битовая глубина RAW (или формат Phase One)
+            public int ExifColorSpace; // Цветовое пространство из EXIF
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct libraw_image_sizes_t
+        {
+            // Основные размеры изображения
+            public ushort raw_height;
+            public ushort raw_width;
+            public ushort height;
+            public ushort width;
+
+            // Поля и отступы
+            public ushort top_margin;
+            public ushort left_margin;
+
+            // Размеры выходного изображения
+            public ushort iheight;
+            public ushort iwidth;
+
+            // RAW параметры
+            public ushort raw_pitch;
+            public double pixel_aspect;
+
+            // Ориентация и маски
+            [MarshalAs(UnmanagedType.I4)]
+            public LibRawOrientation flip; // Используем enum для лучшей читаемости
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            public int[] mask;
+
+            // Области кропа
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public ushort[] raw_crop;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public int[] raw_inset_crops;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public int[] raw_inset_crops_size;
+
+            // Информация о производителе
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string maker_index;
+
+            // Уровни сенсора
+            public SensorLevels sensor_levels;
+
+            // Вложенная структура для уровней сенсора
+            [StructLayout(LayoutKind.Sequential)]
+            public struct SensorLevels
+            {
+                [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+                public float[] black;
+
+                [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+                public float[] white;
+
+                public float cfablack;
+                public float cfawhite;
+            }
+        }
+
+        // Enum для ориентации
+        public enum LibRawOrientation
+        {
+            ORIENTATION_0 = 0,
+            ORIENTATION_90 = 3,
+            ORIENTATION_180 = 2,
+            ORIENTATION_270 = 1,
+            ORIENTATION_HFLIP = 4,
+            ORIENTATION_VFLIP = 5,
+            ORIENTATION_ROTATE_90 = 6,
+            ORIENTATION_ROTATE_270 = 7
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_makernotes_t
+        {
+            public libraw_canon_makernotes_t canon;
+            public libraw_nikon_makernotes_t nikon;
+            public libraw_hasselblad_makernotes_t hasselblad;
+            public libraw_fuji_info_t fuji;
+            public libraw_olympus_makernotes_t olympus;
+            public libraw_sony_info_t sony;
+            public libraw_kodak_makernotes_t kodak;
+            public libraw_panasonic_makernotes_t panasonic;
+            public libraw_pentax_makernotes_t pentax;
+            public libraw_p1_makernotes_t phaseone;
+            public libraw_ricoh_makernotes_t ricoh;
+            public libraw_samsung_makernotes_t samsung;
+            public libraw_metadata_common_t common;
+        }
+
+        // Пример реализации одной из вложенных структур (Canon)
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_canon_makernotes_t
+        {
+            public int CameraType;
+            public int CameraSerial;
+            public int CanonModelID;
+            public int Firmware;
+            public int DriveMode;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public short[] ImageStabilization;
+
+            public float MeasuredEV;
+            public int CameraTemperature;
+            public int FocusDistance;
+            public int AFPointsInFocus;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+            public byte[] AFInfo;
+        }
+
+        // Аналогично для других производителей...
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_metadata_common_t
+        {
+            public int FlashEC;
+            public int FlashGN;
+            public float CameraTemperature;
+            public float SensorTemperature;
+            public float LensTemperature;
+            public float AmbientTemperature;
+            public float BatteryTemperature;
+            public float ExposureCompensation;
+            public float ShutterSpeed;
+            public float Aperture;
+            public float FocalLength;
+            public int ISO;
+            public int FlashFired;
+            public int FlashMode;
+            public int FlashReturn;
+            public int FlashType;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct libraw_shootinginfo_t
+        {
+            public short DriveMode;
+            public short FocusMode;
+            public short MeteringMode;
+            public short AFPoint;
+            public short ExposureMode;
+            public short ExposureProgram;
+            public short ImageStabilization;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string BodySerial;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string InternalBodySerial;
+
+            // Методы расширения для удобства работы
+            public string GetFormattedDriveMode()
+            {
+                return DriveMode switch
+                {
+                    0 => "Single Shot",
+                    1 => "Continuous",
+                    2 => "Self Timer",
+                    3 => "Bracketing",
+                    _ => $"Unknown ({DriveMode})"
+                };
+            }
+
+            public bool HasImageStabilization()
+            {
+                return ImageStabilization != 0;
+            }
+        }
+
+        // Enum для режимов (опционально)
+        public enum CameraDriveMode
+        {
+            Single = 0,
+            Continuous = 1,
+            SelfTimer = 2,
+            Bracketing = 3
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_data_t
+        {
+            public IntPtr image;  // Указатель на массив ushort[4]
+
+            public libraw_image_sizes_t sizes;
+            public libraw_iparams_t idata;
+            public libraw_lensinfo_t lens;
+            public libraw_makernotes_t makernotes;
+            public libraw_shootinginfo_t shootinginfo;
+            public libraw_output_params_t params;
+            public libraw_raw_unpack_params_t rawparams;
+
+            public uint progress_flags;
+            public uint process_warnings;
+
+            public libraw_colordata_t color;
+            public libraw_imgother_t other;
+            public libraw_thumbnail_t thumbnail;
+            public libraw_thumbnail_list_t thumbs_list;
+            public libraw_rawdata_t rawdata;
+
+            public IntPtr parent_class;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_output_params_t
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public uint[] greybox;       // -A x1 y1 x2 y2
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public uint[] cropbox;       // -B x1 y1 x2 y2
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public double[] aber;        // -C
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+            public double[] gamm;        // -g
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public float[] user_mul;     // -r mul0 mul1 mul2 mul3
+
+            public float bright;         // -b
+            public float threshold;      // -n
+            public int half_size;        // -h
+            public int four_color_rgb;   // -f
+            public int highlight;        // -H
+            public int use_auto_wb;      // -a
+            public int use_camera_wb;    // -w
+            public int use_camera_matrix; // +M/-M
+            public int output_color;     // -o
+
+            public IntPtr output_profile; // -o
+            public IntPtr camera_profile; // -p
+            public IntPtr bad_pixels;    // -P
+            public IntPtr dark_frame;    // -K
+
+            public int output_bps;       // -4
+            public int output_tiff;      // -T
+            public int output_flags;
+            public int user_flip;        // -t
+            public int user_qual;        // -q
+            public int user_black;       // -k
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public int[] user_cblack;
+
+            public int user_sat;         // -S
+            public int med_passes;       // -m
+            public float auto_bright_thr;
+            public float adjust_maximum_thr;
+            public int no_auto_bright;   // -W
+            public int use_fuji_rotate;  // -j
+            public int use_p1_correction;
+            public int green_matching;
+
+            // DCB parameters
+            public int dcb_iterations;
+            public int dcb_enhance_fl;
+            public int fbdd_noiserd;
+
+            // Exposure correction
+            public int exp_correc;
+            public float exp_shift;
+            public float exp_preser;
+
+            public int no_auto_scale;
+            public int no_interpolation;
+
+            // Методы для работы со строками
+            public string OutputProfile => Marshal.PtrToStringAnsi(output_profile);
+            public string CameraProfile => Marshal.PtrToStringAnsi(camera_profile);
+            public string BadPixelsFile => Marshal.PtrToStringAnsi(bad_pixels);
+            public string DarkFrameFile => Marshal.PtrToStringAnsi(dark_frame);
+
+            // Методы расширения
+            public bool UseAutoWhiteBalance => use_auto_wb != 0;
+            public bool UseCameraWhiteBalance => use_camera_wb != 0;
+            public bool ShouldApplyFujiRotate => use_fuji_rotate != 0;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_P1_color_t
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 9)]
+            public float[] romm_cam; // ROMM (ProPhoto RGB) цветовая матрица 3x3
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_dng_levels_t
+        {
+            public uint parsedfields; // Битовые флаги обработанных полей
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = LibRawConstants.CBLACK_SIZE)]
+            public uint[] dng_cblack; // Чёрные уровни DNG
+
+            public uint dng_black; // Общий чёрный уровень DNG
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = LibRawConstants.CBLACK_SIZE)]
+            public float[] dng_fcblack; // Чёрные уровни DNG (float)
+
+            public float dng_fblack; // Общий чёрный уровень DNG (float)
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public uint[] dng_whitelevel; // Уровни белого для каждого канала
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public ushort[] default_crop; // Область кропа [left, top, right, bottom]
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public float[] user_crop; // Пользовательский кроп [top, left, bottom, right]
+
+            public uint preview_colorspace; // Цветовое пространство превью
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public float[] analogbalance; // Баланс аналоговых усилений
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public float[] asshotneutral; // Нейтральные точки "как снято"
+
+            public float baseline_exposure; // Базовый экспо-коррекция
+            public float LinearResponseLimit; // Лимит линейного отклика
+        }
+
+        public static class LibRawConstants
+        {
+            public const int CBLACK_SIZE = 4102; // Стандартный размер для LIBRAW_CBLACK_SIZE
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_dng_color_t
+        {
+            public uint parsedfields;  // Битовые флаги обработанных полей
+
+            public ushort illuminant; // Идентификатор источника освещения
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4 * 4)]
+            public float[] calibration; // Матрица калибровки 4x4
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4 * 3)]
+            public float[] colormatrix; // Цветовая матрица 4x3
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3 * 4)]
+            public float[] forwardmatrix; // Прямая матрица 3x4
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ph1_t
+        {
+            public int format;    // Формат RAW Phase One
+            public int key_off;   // Смещение ключа (часто используется в Phase One)
+            public int tag_21a;   // Неизвестный тег (зависит от модели камеры)
+
+            public int t_black;   // Чёрный уровень (верхний)
+            public int split_col; // Разделение по столбцам
+            public int black_col; // Чёрный уровень столбцов
+            public int split_row; // Разделение по строкам
+            public int black_row; // Чёрный уровень строк
+
+            public float tag_210; // Дополнительный параметр (обычно float)
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi /*, Pack = 1 */)]

@@ -1,4 +1,5 @@
 ﻿using image_designer;
+using System.Runtime.InteropServices;
 using static MaxssauLibraries.classLibRAW;
 using static System.Runtime.InteropServices.Marshal;
 
@@ -72,7 +73,10 @@ namespace MaxssauLibraries
                         libraw_set_output_bps(libraw_handler, settings.output_bps);
                         libraw_set_output_color(libraw_handler, settings.output_color);
                         libraw_set_no_auto_bright(libraw_handler, 1);
+
+                        var imgdata = Marshal.PtrToStructure<libraw_colordata_t>(libraw_handler);
                         
+
                         if (settings.UseToneCurve == false)
                         {
                             libraw_set_gamma(libraw_handler, 0, 1);

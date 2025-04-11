@@ -133,7 +133,18 @@ namespace RAW_Edit
             cmbToneCurveSource.Items.Add("DCP(if detected)");
             cmbToneCurveSource.Items.Add("User");
 
-            cmbToneCurveSource.SelectedIndex = int.Parse(Settings.GetSetting("ToneCurveSource"));
+            string settings_tonecurve_selected = Settings.GetSetting("ToneCurveSource");
+
+            int selected_index = 0;
+
+            if(int.TryParse(settings_tonecurve_selected, out selected_index))
+            {
+                cmbToneCurveSource.SelectedIndex = selected_index;
+            }
+            else
+            {
+                cmbToneCurveSource.SelectedIndex = -1;
+            }
 
             cmbDemosaic.Items.Clear();
             cmbDemosaic.Items.Add("Linear");
