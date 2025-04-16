@@ -588,6 +588,142 @@ namespace MaxssauLibraries
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_thumbnail_t
+        {
+            public LibRaw_thumbnail_formats tformat; // Формат превью
+            public ushort twidth;                    // Ширина превью
+            public ushort theight;                   // Высота превью
+            public ushort tcolors;                   // Количество цветов
+            public int tlength;                      // Размер данных превью
+
+            public IntPtr thumb;                     // Указатель на данные превью
+
+            // Размеры встроенного JPEG превью
+            public ushort tflip;
+            public float tshutter;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+            public string tdesc;                     // Описание превью
+
+            // Методы для удобной работы
+            public byte[] GetThumbnailBytes()
+            {
+                if (thumb == IntPtr.Zero || tlength <= 0)
+                    return null;
+
+                byte[] bytes = new byte[tlength];
+                Marshal.Copy(thumb, bytes, 0, tlength);
+                return bytes;
+            }
+
+            public bool IsJPEG => tformat == LibRaw_thumbnail_formats.JPEG;
+            public bool IsLAYER => tformat == LibRaw_thumbnail_formats.LAYER;
+            public bool IsBITMAP => tformat == LibRaw_thumbnail_formats.BITMAP;
+
+            public Size Dimensions => new Size(twidth, theight);
+        }
+
+        // Форматы превью
+        public enum LibRaw_thumbnail_formats
+        {
+            NO_THUMBNAIL = 0,    // Превью отсутствует
+            JPEG = 1,            // JPEG превью
+            BITMAP = 2,          // 8-битное RGB превью
+            LAYER = 3,           // Слоистое превью
+            ROLLEI = 4           // Rollei превью
+        }
+
+        // Методы расширения
+        public static class ThumbnailExtensions
+        {
+            public static Image ToImage(this libraw_thumbnail_t thumbnail)
+            {
+                if (!thumbnail.IsJPEG || thumbnail.thumb == IntPtr.Zero)
+                    return null;
+
+                using (var ms = new MemoryStream(thumbnail.GetThumbnailBytes()))
+                {
+                    return Image.FromStream(ms);
+                }
+            }
+
+            public static void SaveToFile(this libraw_thumbnail_t thumbnail, string path)
+            {
+                var bytes = thumbnail.GetThumbnailBytes();
+                if (bytes != null)
+                    File.WriteAllBytes(path, bytes);
+            }
+        }
+
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct libraw_raw_unpack_params_t
+        {
+            public int use_rawspeed;       // Использование RawSpeed
+            public int use_dngsdk;         // Использование DNG SDK
+            public uint options;           // Битовые флаги опций
+            public uint shot_select;       // -s выбор кадра
+            public uint specials;          // Специальные флаги
+            public uint max_raw_memory_mb; // Лимит памяти (в МБ)
+
+            public int sony_arw2_posterization_thr; // Порог потери качества Sony ARW2
+
+            public float coolscan_nef_gamma;        // Гамма-коррекция Nikon Coolscan
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+            public byte[] p4shot_order;             // Порядок кадров 4-shot
+
+            public IntPtr custom_camera_strings;    // Массив строк кастомных камер
+
+            // Свойства для удобного доступа
+            public bool UseRawSpeed => use_rawspeed != 0;
+            public bool UseDngSdk => use_dngsdk != 0;
+
+            public string P4ShotOrderString =>
+                p4shot_order != null ? Encoding.ASCII.GetString(p4shot_order).TrimEnd('\0') : null;
+
+            // Метод для получения кастомных строк камер
+            public List<string> GetCustomCameraStrings()
+            {
+                var result = new List<string>();
+                if (custom_camera_strings == IntPtr.Zero)
+                    return result;
+
+                IntPtr current = custom_camera_strings;
+                while (true)
+                {
+                    IntPtr stringPtr = Marshal.ReadIntPtr(current);
+                    if (stringPtr == IntPtr.Zero)
+                        break;
+
+                    result.Add(Marshal.PtrToStringAnsi(stringPtr));
+                    current += IntPtr.Size;
+                }
+
+                return result;
+            }
+        }
+
+        // Вспомогательные enum для флагов
+        [Flags]
+        public enum RawUnpackOptions : uint
+        {
+            None = 0,
+            DisableAutoScale = 1 << 0,
+            DisableInterpolation = 1 << 1,
+            // Добавьте другие флаги по мере необходимости
+        }
+
+        [Flags]
+        public enum RawUnpackSpecials : uint
+        {
+            None = 0,
+            HalfSize = 1 << 0,
+            ForceFourColors = 1 << 1,
+            // Добавьте другие специальные флаги
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct libraw_output_params_t
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
