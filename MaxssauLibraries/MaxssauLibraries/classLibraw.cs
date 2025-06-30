@@ -9,12 +9,6 @@ using static MaxssauLibraries.LibRawProcessor;
 namespace MaxssauLibraries
 {
 
-    public struct RawData
-    {
-        public RAWImageInfo ImageInfo;
-        public ushort[,] Data;
-    }
-
     public struct RAWImageInfo
     {
         public ushort raw_width;
@@ -24,13 +18,6 @@ namespace MaxssauLibraries
         public ushort colors;
         public ushort bpp;
     }
-
-    public enum Result
-    {
-        SUCCESS = 0,
-        FAIL = 1
-    }
-
 
     public sealed unsafe class LibRawProcessor : IDisposable
     {
@@ -81,6 +68,15 @@ namespace MaxssauLibraries
         [DllImport(LibRawDll, CharSet = CharSet.Ansi)]
         public static extern int libraw_COLOR(IntPtr lr, int row, int col);
 
+        [DllImport(LibRawDll, CharSet = CharSet.Ansi)]
+        public static extern float libraw_get_cam_mul(IntPtr lr, int index);
+
+        [DllImport(LibRawDll, CharSet = CharSet.Ansi)]
+        public static extern float libraw_get_pre_mul(IntPtr lr, int index);
+
+        [DllImport(LibRawDll, CharSet = CharSet.Ansi)]
+        public static extern float libraw_get_rgb_cam(IntPtr lr, int index1, int index2);
+
 
         private readonly IntPtr _librawHandle;
 
@@ -124,6 +120,19 @@ namespace MaxssauLibraries
             image_data.ImageHeight = (int)height / 2;
             image_data.Image_Input_MinMaxLevels = new image_designer.RGB_MinMaxValues();
 
+            image_data.pre_mul = new double[4];
+            image_data.cam_mul = new double[4];
+            image_data.rgb_cam_mul = new double[4, 3];
+
+            for (int i = 0;i<4;i++)
+            {
+                image_data.pre_mul[i]=(double)libraw_get_pre_mul(_handle, i);
+                image_data.cam_mul[i] = (double)libraw_get_cam_mul(_handle, i);
+                for(int j=0;j<3;j++)
+                {
+                    image_data.rgb_cam_mul[i,j]=(double)libraw_get_rgb_cam(_handle, i, j);
+                }
+            }
 
             int result = 0;
 
@@ -150,6 +159,7 @@ namespace MaxssauLibraries
                                     image_data.Image_Input_RAW_RGB[i / 2, j / 2].G1 = (ushort)result;
                                     image_data.Image_Input_MinMaxLevels.G1.calc((ushort)result);
                                     image_data.Image_Input_RAW_RGB[i / 2, j / 2].G += (ushort)result / 2;
+                                    image_data.Image_Input_MinMaxLevels.G.calc(image_data.Image_Input_RAW_RGB[i / 2, j / 2].G);
                                 }
                                 break;
                             case 2:

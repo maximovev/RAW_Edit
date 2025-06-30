@@ -67,7 +67,7 @@ namespace RAW_Edit
 
         private InputRAWImage raw_image;
 
-        private RawData raw_data = new RawData();
+        //private RawData raw_data = new RawData();
 
         private Processing_Image image_edit;
 

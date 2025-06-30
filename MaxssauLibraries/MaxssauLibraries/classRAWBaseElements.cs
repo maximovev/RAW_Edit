@@ -26,6 +26,16 @@ namespace MaxssauLibraries
         public RGB_MinMaxValues Image_Input_MinMaxLevels;
         public int ImageWidth;
         public int ImageHeight;
+        public double[] cam_mul;
+        public double[] pre_mul;
+        public double[,] rgb_cam_mul;
+
+        public InputRAWImage()
+        {
+            cam_mul = new double[4];
+            pre_mul = new double[4];
+            rgb_cam_mul = new double[4, 3];
+        }
     }
 
     public struct ImagePack

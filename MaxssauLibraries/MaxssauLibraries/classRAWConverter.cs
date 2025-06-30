@@ -81,7 +81,8 @@ namespace MaxssauLibraries
                             {
                                 for (int j = 0; j < 3; j++)
                                 {
-                                    cm_data[i, j] = DCP_CM_Settings.values[selected_profile].ColorMatrix[i, j];
+                                    //cm_data[i, j] = DCP_CM_Settings.values[selected_profile].ColorMatrix[i, j];
+                                    cm_data[i, j] = RawImage.rgb_cam_mul[i, j];
                                 }
                             }
 
@@ -111,6 +112,8 @@ namespace MaxssauLibraries
                                     }
                                     break;
                             }
+
+                            BlackLevel_User = 1000;
 
                             Parallel.For(0, RawImage.ImageWidth, x =>
                             {
@@ -147,9 +150,13 @@ namespace MaxssauLibraries
 
                                     if (ConversionStageSetup.WhiteBalanceCorrection == true)
                                     {
-                                        ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * DCP_CM_Settings.values[selected_profile].WB_coeff[0];
+                                        /*ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * DCP_CM_Settings.values[selected_profile].WB_coeff[0];
                                         ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G * DCP_CM_Settings.values[selected_profile].WB_coeff[1];
-                                        ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * DCP_CM_Settings.values[selected_profile].WB_coeff[2];
+                                        ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * DCP_CM_Settings.values[selected_profile].WB_coeff[2];*/
+
+                                        ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * RawImage.pre_mul[0];
+                                        ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G * RawImage.pre_mul[1];
+                                        ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * RawImage.pre_mul[2];
                                     }
 
 
