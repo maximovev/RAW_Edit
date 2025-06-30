@@ -31,12 +31,16 @@ namespace image_designer
         public Double_MaxValue R;
         public Double_MaxValue G;
         public Double_MaxValue B;
+        public Double_MaxValue G1;
+        public Double_MaxValue G2;
 
         public void CalcRGB(RGB_Pixel pixel)
         {
             R.calc(pixel.R);
             G.calc(pixel.G);
             B.calc(pixel.B);
+            G1.calc(pixel.G1);
+            G2.calc(pixel.G2);
         }
 
         public void Reset()
@@ -44,6 +48,8 @@ namespace image_designer
             R.reset();
             G.reset();
             B.reset();
+            G1.reset();
+            G2.reset();
         }
     }
 
@@ -119,7 +125,9 @@ namespace image_designer
 		public double R;
 		public double G;
 		public double B;
-	};
+        public double G1;
+        public double G2;
+    };
 	public struct HSV_Pixel
 	{
 		public double H;
