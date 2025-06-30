@@ -35,7 +35,7 @@ namespace MaxssauLibraries
     public sealed unsafe class LibRawProcessor : IDisposable
     {
 
-        public Result LastOperationResult;
+        public OperationStatus LastOperationResult;
 
         private IntPtr _handle;
         private bool _disposed;
@@ -89,33 +89,35 @@ namespace MaxssauLibraries
         {
             _handle = libraw_init(0);
             if (_handle == IntPtr.Zero)
-                throw new LibRawException("Failed to initialize LibRaw");
+            {
+                LastOperationResult = OperationStatus.STATUS_FAIL;
+                return;
+            }
             LastOperationResult = GetRawPixels(filename, ref image_data);
         }
 
 
-        private Result GetRawPixels(string filePath, ref InputRAWImage image_data)
+        private OperationStatus GetRawPixels(string filePath, ref InputRAWImage image_data)
         {
             // Открываем файл
             int openResult = libraw_open_file(_handle, filePath);
             if (openResult != 0)
-                throw new Exception($"Ошибка открытия файла: {openResult}");
+            {
+                return OperationStatus.STATUS_FAIL;   
+            }
 
             // Распаковываем метаданные и RAW данные
             int unpackResult = libraw_unpack(_handle);
 
 
             if (unpackResult != 0)
-                throw new Exception($"Ошибка распаковки: {unpackResult}");
-
-            int raw2imageResult = (int)libraw_raw2image(_handle);
-
-            // Получаем доступ к структуре данных
+            {
+                libraw_close(_handle);
+                return OperationStatus.STATUS_FAIL;
+            }
 
             uint width = (uint)libraw_get_raw_width(_handle);
             uint height = (uint)libraw_get_raw_height(_handle);
-
-            uint bufferSize = width * height;
 
             image_data.Image_Input_RAW_RGB = new image_designer.RGB_Pixel[width / 2, height / 2];
             image_data.ImageWidth = (int)width / 2;
@@ -174,7 +176,7 @@ namespace MaxssauLibraries
                 }
             }
 
-            return Result.SUCCESS;
+            return OperationStatus.STATUS_OK;
 
         }
 

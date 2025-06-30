@@ -63,7 +63,6 @@ namespace RAW_Edit
 
         public BitDepthCoeff RAW_BitDepthCoeff;
 
-        public Libraw_Settings libraw_settings;
 
         void Worker_fn(object sender, DoWorkEventArgs e)
         {

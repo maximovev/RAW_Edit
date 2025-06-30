@@ -207,7 +207,6 @@ namespace RAW_Edit
                 tlbStatus.Text = "Open file...";
                 //bwOpenFile.RunWorkerAsync();
                 classRAWReader raw_reader = new classRAWReader(Logger);
-                raw_reader.settings = app.LibrawSettings;
                 raw_reader.OpenRAW(image_edit.file_name);
                 frmEdit formEdit = new frmEdit();
 
@@ -309,7 +308,6 @@ namespace RAW_Edit
                         form.Logger = Logger;
                         form.MdiParent = this;
                         form.DCP_CM_Settings = DCP_CM_Settings;
-                        form.libraw_settings = app.LibrawSettings;
                         form.ToneCurveType=cmbToneCurveSource.SelectedIndex;
                         
                         
@@ -370,66 +368,7 @@ namespace RAW_Edit
 
         private void cmbDemosaic_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbDemosaic.SelectedIndex > -1)
-            {
-                Settings.UpdateSetting("DemosaicSelected", cmbDemosaic.Items[cmbDemosaic.SelectedIndex].ToString(), true);
-                Settings.SaveSettings();
-
-                /*
-                 * 
-                LINEAR = 0,
-                VNG = 1,
-                PPG = 2,
-                AHD = 3,
-                DCB = 4,
-                DHT = 11,
-                MODIFIED_AHD = 12
-                 * */
-
-                switch (cmbDemosaic.Items[cmbDemosaic.SelectedIndex].ToString())
-                {
-                    case "LINEAR":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.LINEAR;
-                        }
-                        break;
-                    case "VNG":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.VNG;
-                        }
-                        break;
-                    case "PPG":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.PPG;
-                        }
-                        break;
-                    case "AHD":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.AHD;
-                        }
-                        break;
-                    case "DCB":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.DCB;
-                        }
-                        break;
-                    case "DHT":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.DHT;
-                        }
-                        break;
-                    case "MODIFIED_AHD":
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.MODIFIED_AHD;
-                        }
-                        break;
-                    default:
-                        {
-                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.AHD;
-                        }
-                        break;
-                }
-            }
+            
         }
 
         private void cmbToneCurveSource_SelectedIndexChanged(object sender, EventArgs e)
@@ -439,14 +378,6 @@ namespace RAW_Edit
                 Settings.UpdateSetting("ToneCurveSource", cmbToneCurveSource.SelectedIndex.ToString(), true);
                 Settings.SaveSettings();
 
-                if(cmbToneCurveSource.SelectedIndex==0)
-                {
-                    app.LibrawSettings.UseToneCurve = true;
-                }
-                else
-                {
-                    app.LibrawSettings.UseToneCurve = false;
-                }
             }
         }
     }

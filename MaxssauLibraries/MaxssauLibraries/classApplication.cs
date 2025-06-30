@@ -59,8 +59,6 @@ namespace image_designer
 	public class classApplication: ClassAddToLog
     {
 
-		public Libraw_Settings	LibrawSettings=new Libraw_Settings();
-
         private string ModuleName = "Application";
         		
 		public string Log_module_name="App";
