@@ -39,7 +39,7 @@ namespace RAW_Edit
     }
 
 
-    public partial class Form1 : Form
+    public partial class frmMDIMain : Form
     {
         private string ModuleName = "Main Form";
         private ClassLogger Logger;
@@ -58,6 +58,8 @@ namespace RAW_Edit
             }
         }
 
+
+        public int DCP_SelectedProfile = -1;
 
         private classApplication app = new classApplication();
 
@@ -79,7 +81,10 @@ namespace RAW_Edit
 
         private _SettingsStatus SettingsStatus;
 
-        public Form1()
+
+
+
+        public frmMDIMain()
         {
             InitializeComponent();
 
@@ -113,23 +118,83 @@ namespace RAW_Edit
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Logger =new ClassLogger( app.GetCurrentFolder(),app.GetTimeStamp()+".txt" );
+            Logger = new ClassLogger(app.GetCurrentFolder(), app.GetTimeStamp() + ".txt");
             Logger.OpenLog(ClassLogger.FileMode.Append);
-            
+
             app.Logger = Logger;
+            app.LoadDCPData();
 
             Settings = new("config.xml", ref Logger);
             Settings.LoadSettings();
 
+            cmbToneCurveSource.Items.Clear();
+            cmbToneCurveSource.Items.Add("Libraw");
+            cmbToneCurveSource.Items.Add("DCP(if detected)");
+            cmbToneCurveSource.Items.Add("User");
+
+            string settings_tonecurve_selected = Settings.GetSetting("ToneCurveSource");
+
+            int selected_index = 0;
+
+            if(int.TryParse(settings_tonecurve_selected, out selected_index))
+            {
+                cmbToneCurveSource.SelectedIndex = selected_index;
+            }
+            else
+            {
+                cmbToneCurveSource.SelectedIndex = -1;
+            }
+
+            cmbDemosaic.Items.Clear();
+            cmbDemosaic.Items.Add("Linear");
+            cmbDemosaic.Items.Add("VNG");
+            cmbDemosaic.Items.Add("PPG");
+            cmbDemosaic.Items.Add("AHD");
+            cmbDemosaic.Items.Add("DCB");
+            cmbDemosaic.Items.Add("DHT");
+            cmbDemosaic.Items.Add("MODIFIED_AHD");
+
+            cmbDCPProfile.Items.Clear();
+
+            string demosaic_last = Settings.GetSetting("DemosaicSelected");
+
+            for (int i = 0; i < cmbDemosaic.Items.Count; i++)
+            {
+                if (demosaic_last == cmbDemosaic.Items[i].ToString())
+                {
+                    cmbDemosaic.SelectedIndex = i;
+                }
+            }
+
+            string dcp_last = Settings.GetSetting("DCPProfileSelected");
+            for (int i = 0; i < app.DCP_Data.DCP_Data.Count; i++)
+            {
+                cmbDCPProfile.Items.Add(app.DCP_Data.DCP_Data[i].ProfileName);
+
+                if (dcp_last == app.DCP_Data.DCP_Data[i].ProfileName)
+                {
+                    cmbDCPProfile.SelectedIndex = i;
+                }
+            }
+
+
+            /*
+             * 
+             * LINEAR = 0,
+            VNG = 1,
+            PPG = 2,
+            AHD = 3,
+            DCB = 4,
+            DHT = 11,
+            MODIFIED_AHD = 12
+             * */
+
+
+
+
+
             LoadCMSettings("ColorMatrixFile", ref Settings, ref DCP_CM_Settings, ref SettingsStatus, ref Logger, ref Status);
 
-            cmbBitDepth.SelectedIndex = 0;
-
-            for (int i = 0; i < DCP_CM_Settings.values.Count; i++)
-            {
-                cmbCMProfile.Items.Add(DCP_CM_Settings.values[i].name);
-            }
-            cmbCMProfile.SelectedIndex = 0;
         }
 
         private void toolButtonOpen_Click(object sender, EventArgs e)
@@ -142,10 +207,11 @@ namespace RAW_Edit
                 tlbStatus.Text = "Open file...";
                 //bwOpenFile.RunWorkerAsync();
                 classRAWReader raw_reader = new classRAWReader(Logger);
+                raw_reader.settings = app.LibrawSettings;
                 raw_reader.OpenRAW(image_edit.file_name);
-                frmEdit formEdit=new frmEdit();
+                frmEdit formEdit = new frmEdit();
 
-                formEdit.raw_image=raw_reader.RAWImage;
+                formEdit.raw_image = raw_reader.RAWImage;
 
                 //form.image_edit = image_edit;
 
@@ -153,7 +219,12 @@ namespace RAW_Edit
                 formEdit.Logger = Logger;
                 formEdit.MdiParent = this;
                 formEdit.DCP_CM_Settings = DCP_CM_Settings;
-                formEdit.CM_Selected_Profile = cmbCMProfile.SelectedIndex;
+
+                if (cmbDCPProfile.SelectedIndex > -1)
+                {
+                    formEdit.DCP_data = app.DCP_Data.DCP_Data[cmbDCPProfile.SelectedIndex];
+                }
+
 
                 formEdit.Show();
             }
@@ -238,21 +309,10 @@ namespace RAW_Edit
                         form.Logger = Logger;
                         form.MdiParent = this;
                         form.DCP_CM_Settings = DCP_CM_Settings;
-                        form.CM_Selected_Profile = cmbCMProfile.SelectedIndex;
-
-                        switch (cmbBitDepth.SelectedIndex)
-                        {
-                            case 0:
-                                {
-                                    form.RAW_BitDepthCoeff = BitDepthCoeff.RAW_12Bit;
-                                }
-                                break;
-                            case 1:
-                                {
-                                    form.RAW_BitDepthCoeff = BitDepthCoeff.RAW_14Bit;
-                                }
-                                break;
-                        }
+                        form.libraw_settings = app.LibrawSettings;
+                        form.ToneCurveType=cmbToneCurveSource.SelectedIndex;
+                        
+                        
                         form.Show();
                     }
                     break;
@@ -277,6 +337,11 @@ namespace RAW_Edit
 
         }
 
+        private void cmbDCPProfile_SelectedIndexChanged(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
         private void tlbBtnSaveImage_Click(object sender, EventArgs e)
         {
             if (HasChildren == true)
@@ -285,6 +350,102 @@ namespace RAW_Edit
                 if (activeChild != null)
                 {
                     activeChild.SaveImage();
+                }
+            }
+        }
+
+        private void cmbDCPProfile_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbDCPProfile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbDCPProfile.SelectedIndex > -1)
+            {
+                Settings.UpdateSetting("DCPProfileSelected", app.DCP_Data.DCP_Data[cmbDCPProfile.SelectedIndex].ProfileName, true);
+                Settings.SaveSettings();
+            }
+        }
+
+        private void cmbDemosaic_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbDemosaic.SelectedIndex > -1)
+            {
+                Settings.UpdateSetting("DemosaicSelected", cmbDemosaic.Items[cmbDemosaic.SelectedIndex].ToString(), true);
+                Settings.SaveSettings();
+
+                /*
+                 * 
+                LINEAR = 0,
+                VNG = 1,
+                PPG = 2,
+                AHD = 3,
+                DCB = 4,
+                DHT = 11,
+                MODIFIED_AHD = 12
+                 * */
+
+                switch (cmbDemosaic.Items[cmbDemosaic.SelectedIndex].ToString())
+                {
+                    case "LINEAR":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.LINEAR;
+                        }
+                        break;
+                    case "VNG":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.VNG;
+                        }
+                        break;
+                    case "PPG":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.PPG;
+                        }
+                        break;
+                    case "AHD":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.AHD;
+                        }
+                        break;
+                    case "DCB":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.DCB;
+                        }
+                        break;
+                    case "DHT":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.DHT;
+                        }
+                        break;
+                    case "MODIFIED_AHD":
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.MODIFIED_AHD;
+                        }
+                        break;
+                    default:
+                        {
+                            app.LibrawSettings.quality = MaxssauLibraries.classLibRAW.LibRaw_interpolation_quality.AHD;
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void cmbToneCurveSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(cmbToneCurveSource.SelectedIndex>-1)
+            {
+                Settings.UpdateSetting("ToneCurveSource", cmbToneCurveSource.SelectedIndex.ToString(), true);
+                Settings.SaveSettings();
+
+                if(cmbToneCurveSource.SelectedIndex==0)
+                {
+                    app.LibrawSettings.UseToneCurve = true;
+                }
+                else
+                {
+                    app.LibrawSettings.UseToneCurve = false;
                 }
             }
         }

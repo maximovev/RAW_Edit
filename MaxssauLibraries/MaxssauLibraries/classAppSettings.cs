@@ -110,7 +110,8 @@ namespace MaxssauLibraries
                     return setting.Value;
                 }
                 Status = OperationStatus.STATUS_FAIL;
-                throw new KeyNotFoundException($"Setting with key '{key}' not found.");
+                return "";
+                //throw new KeyNotFoundException($"Setting with key '{key}' not found.");
 
             }
             catch (Exception ex)

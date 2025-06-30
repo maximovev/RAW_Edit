@@ -128,6 +128,7 @@
             StartPosition = FormStartPosition.CenterParent;
             Text = "Edit Image";
             WindowState = FormWindowState.Maximized;
+            FormClosed += frmEdit_FormClosed;
             Load += frmEdit_Load;
             ResizeEnd += frmEdit_ResizeEnd;
             Paint += frmEdit_Paint;

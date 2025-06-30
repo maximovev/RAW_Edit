@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dcpData>
+  <ProfileName>Nikon D7000</ProfileName>
+  <CalibrationIlluminant1>20</CalibrationIlluminant1>
+  <CalibrationIlluminant2>0</CalibrationIlluminant2>
+  <ColorMatrix1 Rows="3" Cols="3">
+    <Element Row="2" Col="2">0.764900</Element>
+    <Element Row="2" Col="1">0.169400</Element>
+    <Element Row="2" Col="0">-0.092600</Element>
+    <Element Row="1" Col="2">0.336200</Element>
+    <Element Row="1" Col="1">1.139000</Element>
+    <Element Row="1" Col="0">-0.431800</Element>
+    <Element Row="0" Col="2">-0.025500</Element>
+    <Element Row="0" Col="1">-0.194200</Element>
+    <Element Row="0" Col="0">0.753000</Element>
+  </ColorMatrix1>
+  <ColorMatrix2 Rows="0" Cols="0"/>
+  <ForwardMatrix1 Rows="0" Cols="0"/>
+  <ForwardMatrix2 Rows="0" Cols="0"/>
+  <ReductionMatrix1 Rows="0" Cols="0"/>
+  <ReductionMatrix2 Rows="0" Cols="0"/>
+  <EmbedPolicy>0</EmbedPolicy>
+  <ProfileHueSatMapEncoding>0</ProfileHueSatMapEncoding>
+  <HueSatDeltas1 hueDivisions="6" satDivisions="6" valDivisions="3">
+    <Element HueDiv="0" SatDiv="0" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="0" ValDiv="1" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="0" ValDiv="2" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="1" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="1" ValDiv="1" HueShift="-2.820497" SatScale="0.990232" ValScale="1.048390"/>
+    <Element HueDiv="0" SatDiv="1" ValDiv="2" HueShift="-0.076231" SatScale="0.966824" ValScale="1.075036"/>
+    <Element HueDiv="0" SatDiv="2" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="2" ValDiv="1" HueShift="-0.294122" SatScale="0.977070" ValScale="1.007917"/>
+    <Element HueDiv="0" SatDiv="2" ValDiv="2" HueShift="-0.327236" SatScale="0.971567" ValScale="1.037092"/>
+    <Element HueDiv="0" SatDiv="3" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="3" ValDiv="1" HueShift="-1.233535" SatScale="1.006670" ValScale="0.987092"/>
+    <Element HueDiv="0" SatDiv="3" ValDiv="2" HueShift="-1.798344" SatScale="1.004513" ValScale="1.010635"/>
+    <Element HueDiv="0" SatDiv="4" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="4" ValDiv="1" HueShift="-1.331369" SatScale="1.019157" ValScale="0.979974"/>
+    <Element HueDiv="0" SatDiv="4" ValDiv="2" HueShift="-1.293502" SatScale="1.013233" ValScale="1.004038"/>
+    <Element HueDiv="0" SatDiv="5" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="0" SatDiv="5" ValDiv="1" HueShift="-0.582245" SatScale="1.009939" ValScale="1.000745"/>
+    <Element HueDiv="0" SatDiv="5" ValDiv="2" HueShift="-0.283963" SatScale="1.004541" ValScale="1.008168"/>
+    <Element HueDiv="1" SatDiv="0" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="0" ValDiv="1" HueShift="-2.506338" SatScale="1.003329" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="0" ValDiv="2" HueShift="-2.034509" SatScale="1.030570" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="1" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="1" ValDiv="1" HueShift="-2.506338" SatScale="1.003329" ValScale="1.058824"/>
+    <Element HueDiv="1" SatDiv="1" ValDiv="2" HueShift="-2.034509" SatScale="1.030570" ValScale="1.087285"/>
+    <Element HueDiv="1" SatDiv="2" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="2" ValDiv="1" HueShift="-0.531339" SatScale="1.017285" ValScale="1.028254"/>
+    <Element HueDiv="1" SatDiv="2" ValDiv="2" HueShift="-0.352068" SatScale="1.018194" ValScale="1.057006"/>
+    <Element HueDiv="1" SatDiv="3" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="3" ValDiv="1" HueShift="-0.442338" SatScale="1.015717" ValScale="1.001833"/>
+    <Element HueDiv="1" SatDiv="3" ValDiv="2" HueShift="-1.333635" SatScale="0.996534" ValScale="1.037744"/>
+    <Element HueDiv="1" SatDiv="4" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="4" ValDiv="1" HueShift="-2.002409" SatScale="1.001550" ValScale="0.996690"/>
+    <Element HueDiv="1" SatDiv="4" ValDiv="2" HueShift="-2.312103" SatScale="0.990588" ValScale="1.021886"/>
+    <Element HueDiv="1" SatDiv="5" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="1" SatDiv="5" ValDiv="1" HueShift="-2.249133" SatScale="0.997981" ValScale="1.004281"/>
+    <Element HueDiv="1" SatDiv="5" ValDiv="2" HueShift="-1.972801" SatScale="0.997966" ValScale="1.010102"/>
+    <Element HueDiv="2" SatDiv="0" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="0" ValDiv="1" HueShift="-3.636896" SatScale="1.032780" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="0" ValDiv="2" HueShift="-6.025308" SatScale="1.067715" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="1" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="1" ValDiv="1" HueShift="-3.636896" SatScale="1.032780" ValScale="1.027153"/>
+    <Element HueDiv="2" SatDiv="1" ValDiv="2" HueShift="-6.025308" SatScale="1.067715" ValScale="1.050805"/>
+    <Element HueDiv="2" SatDiv="2" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="2" ValDiv="1" HueShift="-3.161963" SatScale="1.057288" ValScale="0.981728"/>
+    <Element HueDiv="2" SatDiv="2" ValDiv="2" HueShift="-3.059211" SatScale="1.029982" ValScale="1.004019"/>
+    <Element HueDiv="2" SatDiv="3" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="3" ValDiv="1" HueShift="-1.906949" SatScale="1.020159" ValScale="0.956655"/>
+    <Element HueDiv="2" SatDiv="3" ValDiv="2" HueShift="-1.006564" SatScale="0.996908" ValScale="0.977147"/>
+    <Element HueDiv="2" SatDiv="4" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="4" ValDiv="1" HueShift="-0.641732" SatScale="0.999285" ValScale="0.965406"/>
+    <Element HueDiv="2" SatDiv="4" ValDiv="2" HueShift="-0.254268" SatScale="0.995178" ValScale="0.979684"/>
+    <Element HueDiv="2" SatDiv="5" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="2" SatDiv="5" ValDiv="1" HueShift="-0.016410" SatScale="0.996754" ValScale="0.995186"/>
+    <Element HueDiv="2" SatDiv="5" ValDiv="2" HueShift="0.074913" SatScale="0.997999" ValScale="0.987957"/>
+    <Element HueDiv="3" SatDiv="0" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="0" ValDiv="1" HueShift="0.064759" SatScale="0.970914" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="0" ValDiv="2" HueShift="-3.669005" SatScale="0.964966" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="1" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="1" ValDiv="1" HueShift="0.064759" SatScale="0.970914" ValScale="1.043128"/>
+    <Element HueDiv="3" SatDiv="1" ValDiv="2" HueShift="-3.669005" SatScale="0.964966" ValScale="1.063458"/>
+    <Element HueDiv="3" SatDiv="2" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="2" ValDiv="1" HueShift="-2.627167" SatScale="1.007259" ValScale="1.009995"/>
+    <Element HueDiv="3" SatDiv="2" ValDiv="2" HueShift="-3.007643" SatScale="0.990352" ValScale="1.025504"/>
+    <Element HueDiv="3" SatDiv="3" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="3" ValDiv="1" HueShift="-1.167758" SatScale="0.993079" ValScale="0.992496"/>
+    <Element HueDiv="3" SatDiv="3" ValDiv="2" HueShift="-0.492506" SatScale="0.986446" ValScale="0.995658"/>
+    <Element HueDiv="3" SatDiv="4" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="4" ValDiv="1" HueShift="0.048109" SatScale="0.990284" ValScale="0.984596"/>
+    <Element HueDiv="3" SatDiv="4" ValDiv="2" HueShift="0.994434" SatScale="0.994048" ValScale="0.999730"/>
+    <Element HueDiv="3" SatDiv="5" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="3" SatDiv="5" ValDiv="1" HueShift="0.507393" SatScale="0.994744" ValScale="0.998349"/>
+    <Element HueDiv="3" SatDiv="5" ValDiv="2" HueShift="0.651942" SatScale="0.996689" ValScale="0.999284"/>
+    <Element HueDiv="4" SatDiv="0" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="0" ValDiv="1" HueShift="1.677821" SatScale="1.056183" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="0" ValDiv="2" HueShift="0.814877" SatScale="0.992926" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="1" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="1" ValDiv="1" HueShift="1.677821" SatScale="1.056183" ValScale="1.079870"/>
+    <Element HueDiv="4" SatDiv="1" ValDiv="2" HueShift="0.814877" SatScale="0.992926" ValScale="1.082030"/>
+    <Element HueDiv="4" SatDiv="2" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="2" ValDiv="1" HueShift="0.243007" SatScale="1.021338" ValScale="1.080951"/>
+    <Element HueDiv="4" SatDiv="2" ValDiv="2" HueShift="-0.405755" SatScale="1.001574" ValScale="1.069443"/>
+    <Element HueDiv="4" SatDiv="3" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="3" ValDiv="1" HueShift="0.251735" SatScale="1.008203" ValScale="1.092808"/>
+    <Element HueDiv="4" SatDiv="3" ValDiv="2" HueShift="0.165931" SatScale="0.998242" ValScale="1.066288"/>
+    <Element HueDiv="4" SatDiv="4" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="4" ValDiv="1" HueShift="0.817611" SatScale="0.999722" ValScale="1.101956"/>
+    <Element HueDiv="4" SatDiv="4" ValDiv="2" HueShift="0.599685" SatScale="0.998226" ValScale="1.067294"/>
+    <Element HueDiv="4" SatDiv="5" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="4" SatDiv="5" ValDiv="1" HueShift="0.365523" SatScale="0.998913" ValScale="1.050395"/>
+    <Element HueDiv="4" SatDiv="5" ValDiv="2" HueShift="0.328884" SatScale="1.000252" ValScale="1.029903"/>
+    <Element HueDiv="5" SatDiv="0" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="0" ValDiv="1" HueShift="-6.982271" SatScale="1.080798" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="0" ValDiv="2" HueShift="-4.221504" SatScale="1.011278" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="1" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="1" ValDiv="1" HueShift="-6.982271" SatScale="1.080798" ValScale="1.086969"/>
+    <Element HueDiv="5" SatDiv="1" ValDiv="2" HueShift="-4.221504" SatScale="1.011278" ValScale="1.087807"/>
+    <Element HueDiv="5" SatDiv="2" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="2" ValDiv="1" HueShift="-6.620695" SatScale="1.038186" ValScale="1.090609"/>
+    <Element HueDiv="5" SatDiv="2" ValDiv="2" HueShift="-4.202725" SatScale="1.008992" ValScale="1.074024"/>
+    <Element HueDiv="5" SatDiv="3" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="3" ValDiv="1" HueShift="-3.816036" SatScale="1.017959" ValScale="1.084944"/>
+    <Element HueDiv="5" SatDiv="3" ValDiv="2" HueShift="-2.581437" SatScale="1.007908" ValScale="1.059093"/>
+    <Element HueDiv="5" SatDiv="4" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="4" ValDiv="1" HueShift="-1.719767" SatScale="1.007014" ValScale="1.069717"/>
+    <Element HueDiv="5" SatDiv="4" ValDiv="2" HueShift="-0.862332" SatScale="1.004228" ValScale="1.037946"/>
+    <Element HueDiv="5" SatDiv="5" ValDiv="0" HueShift="0.000000" SatScale="1.000000" ValScale="1.000000"/>
+    <Element HueDiv="5" SatDiv="5" ValDiv="1" HueShift="-0.064896" SatScale="1.000516" ValScale="1.042157"/>
+    <Element HueDiv="5" SatDiv="5" ValDiv="2" HueShift="0.107918" SatScale="0.999780" ValScale="1.023996"/>
+  </HueSatDeltas1>
+  <UniqueCameraModelRestriction>Nikon D7000</UniqueCameraModelRestriction>
+  <ProfileLookTableEncoding>0</ProfileLookTableEncoding>
+  <BaselineExposureOffset>0.000000</BaselineExposureOffset>
+  <DefaultBlackRender>0</DefaultBlackRender>
+</dcpData>

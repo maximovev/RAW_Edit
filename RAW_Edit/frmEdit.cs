@@ -18,11 +18,11 @@ namespace RAW_Edit
         RotateNone, RotateLeft, RotateRight
     }
 
-    
+
 
     public partial class frmEdit : Form
     {
-        private string ModuleName = "Form Edit"; 
+        private string ModuleName = "Form Edit";
         public ClassLogger Logger;
         private void AddToLog(Exception ex)
         {
@@ -42,7 +42,7 @@ namespace RAW_Edit
 
         public Processing_Image image_edit;
 
-        public InputRAWImage     raw_image;
+        public InputRAWImage raw_image;
 
         public SettingsManager Settings;
         public OperationStatus Status;
@@ -53,6 +53,8 @@ namespace RAW_Edit
 
         public int CM_Selected_Profile = 0;
 
+        public int ToneCurveType = 0;
+
         private delegate void WorkerComplete();
 
         private System.Drawing.Image image;
@@ -60,6 +62,8 @@ namespace RAW_Edit
         private BackgroundWorker workerThread;
 
         public BitDepthCoeff RAW_BitDepthCoeff;
+
+        public Libraw_Settings libraw_settings;
 
         void Worker_fn(object sender, DoWorkEventArgs e)
         {
@@ -96,7 +100,7 @@ namespace RAW_Edit
                 PreviewWindowUpdateControls();
                 ReDrawImage();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 AddToLog(ex);
             }
@@ -113,7 +117,7 @@ namespace RAW_Edit
             {
                 SaveFileDialog dlgSave = new SaveFileDialog();
                 dlgSave.Filter = "Tif files (*.Tif,*.tiff)|*.Tif;*.tiff";
-                dlgSave.AddExtension=true;
+                dlgSave.AddExtension = true;
                 if (dlgSave.ShowDialog() == DialogResult.OK)
                 {
                     using (SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba64> image = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba64>(raw_processor.RawImage.ImageWidth, raw_processor.RawImage.ImageHeight))
@@ -136,7 +140,7 @@ namespace RAW_Edit
                         };
                         using (var outputStream = new FileStream(dlgSave.FileName, FileMode.CreateNew))
                         {
-                            image.Save(outputStream,tiffEncoder);
+                            image.Save(outputStream, tiffEncoder);
                         }
                     }
                 }
@@ -149,7 +153,7 @@ namespace RAW_Edit
 
         private void frmEdit_Load(object sender, EventArgs e)
         {
-            
+
             Bitmap bitmap = new Bitmap(raw_image.ImageWidth, raw_image.ImageHeight);
             image = bitmap;
 
@@ -158,20 +162,47 @@ namespace RAW_Edit
             raw_processor.ConversionStageSetup.ClipImageData = false;
             raw_processor.ConversionStageSetup.LinearizeData = true;
             raw_processor.ConversionStageSetup.BlackSubstract = true;
-            raw_processor.ConversionStageSetup.WhiteBalanceCorrection =false;
+            raw_processor.ConversionStageSetup.WhiteBalanceCorrection = false;
             raw_processor.ConversionStageSetup.ColorTransform = true;
             raw_processor.ConversionStageSetup.ApplyGamma = false;
             raw_processor.ConversionStageSetup.UserBlackLevel = false;
             raw_processor.ConversionStageSetup.UseHighLightReconstructuion = false;
 
             raw_processor.BlackLevel_User = 1;
-            
+
             raw_processor.RAW_bitdepth_coeff = RAW_BitDepthCoeff;
 
             raw_processor.DCP_CM_Settings = DCP_CM_Settings;
             raw_processor.DCP_data = DCP_data;
 
-            raw_processor.CM_SelectedProfile=CM_Selected_Profile;
+            raw_processor.CM_SelectedProfile = CM_Selected_Profile;
+
+            switch (ToneCurveType)
+            {
+                case 0:
+                    {
+                        //used libraw tone curve, ignore
+                    }
+                    break;
+                case 1:
+                    {
+                        // use DCP tone curve if detected
+                        if (DCP_data.HasDCPData.HasToneCurve == true)
+                        {
+                            raw_processor.ConversionStageSetup.UseDCPToneCurve = true;
+                        }
+                        else
+                        {
+                            raw_processor.ConversionStageSetup.UseDCPToneCurve = false;
+                        }
+                    }
+                    break;
+                case 2:
+                    {
+                        // user tone curve
+                    }
+                    break;
+            }
 
             /*raw_processor.RawImage.ImageWidth = image_edit.width;
             raw_processor.RawImage.ImageHeight = image_edit.height;*/
@@ -261,8 +292,8 @@ namespace RAW_Edit
                 picPreview.Top = 0;
                 picPreview.Left = 0;
 
-                picPreview.Width = tabRAW1.Width-vsbPreview.Width;
-                picPreview.Height = tabRAW1.Height-hsbPreview.Height;
+                picPreview.Width = tabRAW1.Width - vsbPreview.Width;
+                picPreview.Height = tabRAW1.Height - hsbPreview.Height;
 
 
                 tabPreview.Height = this.ClientSize.Height - hsbPreview.Height;
@@ -326,6 +357,11 @@ namespace RAW_Edit
         {
             PreviewWindowUpdateControls();
             ReDrawImage();
+        }
+
+        private void frmEdit_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            
         }
     }
 }

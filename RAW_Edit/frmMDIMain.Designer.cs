@@ -1,6 +1,6 @@
 ﻿namespace RAW_Edit
 {
-    partial class Form1
+    partial class frmMDIMain
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,11 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMDIMain));
             toolStrip1 = new ToolStrip();
             toolButtonOpen = new ToolStripButton();
-            cmbBitDepth = new ToolStripComboBox();
-            cmbCMProfile = new ToolStripComboBox();
+            tlbBtnSaveImage = new ToolStripButton();
+            toolStripLabel1 = new ToolStripLabel();
+            cmbDCPProfile = new ToolStripComboBox();
+            toolStripLabel2 = new ToolStripLabel();
+            cmbDemosaic = new ToolStripComboBox();
+            toolStripLabel3 = new ToolStripLabel();
+            cmbToneCurveSource = new ToolStripComboBox();
             dlgOpenFile = new OpenFileDialog();
             bwOpenFile = new System.ComponentModel.BackgroundWorker();
             statusStrip1 = new StatusStrip();
@@ -42,7 +47,6 @@
             editToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
             optionsToolStripMenuItem = new ToolStripMenuItem();
-            tlbBtnSaveImage = new ToolStripButton();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -51,7 +55,7 @@
             // toolStrip1
             // 
             toolStrip1.ImageScalingSize = new Size(20, 20);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolButtonOpen, tlbBtnSaveImage, cmbBitDepth, cmbCMProfile });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolButtonOpen, tlbBtnSaveImage, toolStripLabel1, cmbDCPProfile, toolStripLabel2, cmbDemosaic, toolStripLabel3, cmbToneCurveSource });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1357, 27);
@@ -68,18 +72,55 @@
             toolButtonOpen.Text = "Open";
             toolButtonOpen.Click += toolButtonOpen_Click;
             // 
-            // cmbBitDepth
+            // tlbBtnSaveImage
             // 
-            cmbBitDepth.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbBitDepth.Items.AddRange(new object[] { "12bit", "14bit" });
-            cmbBitDepth.Name = "cmbBitDepth";
-            cmbBitDepth.Size = new Size(106, 27);
+            tlbBtnSaveImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tlbBtnSaveImage.Image = (Image)resources.GetObject("tlbBtnSaveImage.Image");
+            tlbBtnSaveImage.ImageTransparentColor = Color.Magenta;
+            tlbBtnSaveImage.Name = "tlbBtnSaveImage";
+            tlbBtnSaveImage.Size = new Size(24, 24);
+            tlbBtnSaveImage.Text = "toolStripButton1";
+            tlbBtnSaveImage.Click += tlbBtnSaveImage_Click;
             // 
-            // cmbCMProfile
+            // toolStripLabel1
             // 
-            cmbCMProfile.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbCMProfile.Name = "cmbCMProfile";
-            cmbCMProfile.Size = new Size(106, 27);
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(67, 24);
+            toolStripLabel1.Text = "DCP Profile";
+            // 
+            // cmbDCPProfile
+            // 
+            cmbDCPProfile.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDCPProfile.Name = "cmbDCPProfile";
+            cmbDCPProfile.Size = new Size(121, 27);
+            cmbDCPProfile.SelectedIndexChanged += cmbDCPProfile_SelectedIndexChanged;
+            cmbDCPProfile.Click += cmbDCPProfile_Click;
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(59, 24);
+            toolStripLabel2.Text = "Demosaic";
+            // 
+            // cmbDemosaic
+            // 
+            cmbDemosaic.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDemosaic.Name = "cmbDemosaic";
+            cmbDemosaic.Size = new Size(121, 27);
+            cmbDemosaic.SelectedIndexChanged += cmbDemosaic_SelectedIndexChanged;
+            // 
+            // toolStripLabel3
+            // 
+            toolStripLabel3.Name = "toolStripLabel3";
+            toolStripLabel3.Size = new Size(63, 24);
+            toolStripLabel3.Text = "ToneCurve";
+            // 
+            // cmbToneCurveSource
+            // 
+            cmbToneCurveSource.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbToneCurveSource.Name = "cmbToneCurveSource";
+            cmbToneCurveSource.Size = new Size(121, 27);
+            cmbToneCurveSource.SelectedIndexChanged += cmbToneCurveSource_SelectedIndexChanged;
             // 
             // bwOpenFile
             // 
@@ -138,17 +179,7 @@
             optionsToolStripMenuItem.Text = "Options";
             optionsToolStripMenuItem.Click += optionsToolStripMenuItem_Click;
             // 
-            // tlbBtnSaveImage
-            // 
-            tlbBtnSaveImage.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tlbBtnSaveImage.Image = (Image)resources.GetObject("tlbBtnSaveImage.Image");
-            tlbBtnSaveImage.ImageTransparentColor = Color.Magenta;
-            tlbBtnSaveImage.Name = "tlbBtnSaveImage";
-            tlbBtnSaveImage.Size = new Size(24, 24);
-            tlbBtnSaveImage.Text = "toolStripButton1";
-            tlbBtnSaveImage.Click += tlbBtnSaveImage_Click;
-            // 
-            // Form1
+            // frmMDIMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -158,8 +189,8 @@
             Controls.Add(menuStrip1);
             IsMdiContainer = true;
             MainMenuStrip = menuStrip1;
-            Name = "Form1";
-            Text = "Form1";
+            Name = "frmMDIMain";
+            Text = "RAW Editor";
             WindowState = FormWindowState.Maximized;
             Load += Form1_Load;
             toolStrip1.ResumeLayout(false);
@@ -185,8 +216,12 @@
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem settingsToolStripMenuItem;
         private ToolStripMenuItem optionsToolStripMenuItem;
-        private ToolStripComboBox cmbBitDepth;
-        private ToolStripComboBox cmbCMProfile;
         private ToolStripButton tlbBtnSaveImage;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripComboBox cmbDCPProfile;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripComboBox cmbDemosaic;
+        private ToolStripLabel toolStripLabel3;
+        private ToolStripComboBox cmbToneCurveSource;
     }
 }

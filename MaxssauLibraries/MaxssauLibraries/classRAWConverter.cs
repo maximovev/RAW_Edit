@@ -15,7 +15,7 @@ namespace MaxssauLibraries
         private string ModuleName = "RAW Converter v0.1";
 
 
-        public classDCPXMLReader               DCP_data;
+        public classDCPXMLReader                DCP_data;
 
         public RAW_ConversionStages             ConversionStageSetup=new RAW_ConversionStages();
         public RAW_ConversionSetup              ConversionSetup=new RAW_ConversionSetup();
