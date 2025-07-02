@@ -246,11 +246,9 @@ namespace MaxssauLibraries
         public bool ColorTransform;
         public bool GammaCorrection;
         public bool BlackSubstract;
-        public bool UseCMInsteadDCP;
         public bool ApplyGamma;
-        public bool UserBlackLevel;
         public bool UseHighLightReconstructuion;
-        public bool UseDCPToneCurve;
+        public bool ApplyToneCurve;
     }
 
     internal class classRAWBaseElements

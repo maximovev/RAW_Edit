@@ -45,6 +45,9 @@ namespace MaxssauLibraries
         private static extern void libraw_close(IntPtr lr);
 
         [DllImport(LibRawDll, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void libraw_free(IntPtr lr);
+
+        [DllImport(LibRawDll, CallingConvention = CallingConvention.Cdecl)]
         private static extern int libraw_get_raw_width(IntPtr lr);
 
         [DllImport(LibRawDll, CallingConvention = CallingConvention.Cdecl)]
@@ -185,6 +188,9 @@ namespace MaxssauLibraries
                     }
                 }
             }
+
+            libraw_close(_handle);
+            libraw_free(_handle);
 
             return OperationStatus.STATUS_OK;
 

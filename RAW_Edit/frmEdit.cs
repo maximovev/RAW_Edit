@@ -164,17 +164,7 @@ namespace RAW_Edit
             raw_processor.ConversionStageSetup.WhiteBalanceCorrection = false;
             raw_processor.ConversionStageSetup.ColorTransform = true;
             raw_processor.ConversionStageSetup.ApplyGamma = true;
-            raw_processor.ConversionStageSetup.UserBlackLevel = true;
             raw_processor.ConversionStageSetup.UseHighLightReconstructuion = false;
-
-            raw_processor.BlackLevel_User = 1;
-
-            raw_processor.RAW_bitdepth_coeff = RAW_BitDepthCoeff;
-
-            raw_processor.DCP_CM_Settings = DCP_CM_Settings;
-            raw_processor.DCP_data = DCP_data;
-
-            raw_processor.CM_SelectedProfile = CM_Selected_Profile;
 
             switch (ToneCurveType)
             {
@@ -188,12 +178,9 @@ namespace RAW_Edit
                         // use DCP tone curve if detected
                         if (DCP_data.HasDCPData.HasToneCurve == true)
                         {
-                            raw_processor.ConversionStageSetup.UseDCPToneCurve = true;
+                            
                         }
-                        else
-                        {
-                            raw_processor.ConversionStageSetup.UseDCPToneCurve = false;
-                        }
+                        
                     }
                     break;
                 case 2:
