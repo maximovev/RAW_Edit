@@ -141,6 +141,8 @@ namespace MaxssauLibraries
 
             uint counter = 0;
 
+            image_data.Image_Input_MinMaxLevels.Reset();
+
             for (uint j = 0; j < height; j++)
             {
                 for (uint i = 0; i < width; i++)
@@ -154,29 +156,37 @@ namespace MaxssauLibraries
                             case 0:
                                 {
                                     image_data.Image_Input_RAW_RGB[i / 2, j / 2].R = (ushort)result;
-                                    image_data.Image_Input_MinMaxLevels.R.calc((ushort)result);
+                                    if (result != 0)
+                                    {
+                                        image_data.Image_Input_MinMaxLevels.R.calc((ushort)result);
+                                    }
                                 }
                                 break;
                             case 1:
                                 {
                                     image_data.Image_Input_RAW_RGB[i / 2, j / 2].G1 = (ushort)result;
-                                    image_data.Image_Input_MinMaxLevels.G1.calc((ushort)result);
-                                    image_data.Image_Input_RAW_RGB[i / 2, j / 2].G += (ushort)result / 2;
-                                    image_data.Image_Input_MinMaxLevels.G.calc(image_data.Image_Input_RAW_RGB[i / 2, j / 2].G);
+                                    if (result != 0)
+                                    {
+                                        image_data.Image_Input_MinMaxLevels.G1.calc((ushort)result);
+                                    }
                                 }
                                 break;
                             case 2:
                                 {
                                     image_data.Image_Input_RAW_RGB[i / 2, j / 2].B = (ushort)result;
-                                    image_data.Image_Input_MinMaxLevels.B.calc((ushort)result);
+                                    if (result != 0)
+                                    {
+                                        image_data.Image_Input_MinMaxLevels.B.calc((ushort)result);
+                                    }
                                 }
                                 break;
                             case 3:
                                 {
                                     image_data.Image_Input_RAW_RGB[i / 2, j / 2].G2 = (ushort)result;
-                                    image_data.Image_Input_MinMaxLevels.G2.calc((ushort)result);
-                                    image_data.Image_Input_RAW_RGB[i / 2, j / 2].G += (ushort)result / 2;
-                                    image_data.Image_Input_MinMaxLevels.G.calc(image_data.Image_Input_RAW_RGB[i / 2, j / 2].G);
+                                    if (result != 0)
+                                    {
+                                        image_data.Image_Input_MinMaxLevels.G2.calc((ushort)result);
+                                    }
                                 }
                                 break;
                             default:
@@ -190,7 +200,7 @@ namespace MaxssauLibraries
             }
 
             libraw_close(_handle);
-            libraw_free(_handle);
+            //libraw_free(_handle);
 
             return OperationStatus.STATUS_OK;
 

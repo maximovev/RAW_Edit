@@ -80,20 +80,23 @@ namespace RAW_Edit
         {
             try
             {
-                Bitmap bitmap = new Bitmap(raw_processor.RawImage.ImageWidth, raw_processor.RawImage.ImageHeight);
-
-                RGB_Pixel pixel = new RGB_Pixel();
-
-                for (int x = 0; x < raw_processor.RawImage.ImageWidth; x++)
+                if (raw_processor.ImageOutput.Image_RGB != null)
                 {
-                    for (int y = 0; y < raw_processor.RawImage.ImageHeight; y++)
+                    Bitmap bitmap = new Bitmap(raw_processor.RawImage.ImageWidth, raw_processor.RawImage.ImageHeight);
+
+                    RGB_Pixel pixel = new RGB_Pixel();
+
+                    for (int x = 0; x < raw_processor.RawImage.ImageWidth; x++)
                     {
-                        pixel.R = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].R * 255);
-                        pixel.G = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].G * 255);
-                        pixel.B = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].B * 255);
-                        bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb((int)pixel.R, (int)pixel.G, (int)pixel.B));
+                        for (int y = 0; y < raw_processor.RawImage.ImageHeight; y++)
+                        {
+                            pixel.R = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].R * 255);
+                            pixel.G = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].G * 255);
+                            pixel.B = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].B * 255);
+                            bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb((int)pixel.R, (int)pixel.G, (int)pixel.B));
+                        }
+                        image = bitmap;
                     }
-                    image = bitmap;
                 }
 
                 PreviewWindowUpdateControls();

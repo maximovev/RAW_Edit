@@ -129,6 +129,8 @@ namespace MaxssauLibraries
 
         public classHistogramBuilder R;
         public classHistogramBuilder G;
+        public classHistogramBuilder G1;
+        public classHistogramBuilder G2;
         public classHistogramBuilder B;
         public classHistogramBuilder RGB;
         public OperationStatus Calc()

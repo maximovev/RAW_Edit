@@ -46,7 +46,7 @@ namespace MaxssauLibraries
                     {
                         if (RawImage.Image_Input_MinMaxLevels.R.get_max() > 0 && RawImage.Image_Input_MinMaxLevels.R.get_min() >= 0)
                         {
-                            if (RawImage.Image_Input_MinMaxLevels.G.get_max() > 0 && RawImage.Image_Input_MinMaxLevels.G.get_min() >= 0)
+                            if (RawImage.Image_Input_MinMaxLevels.G1.get_max() > 0 && RawImage.Image_Input_MinMaxLevels.G2.get_max() > 0)
                             {
                                 if (RawImage.Image_Input_MinMaxLevels.B.get_max() > 0 && RawImage.Image_Input_MinMaxLevels.B.get_min() >= 0)
                                 {
@@ -60,6 +60,8 @@ namespace MaxssauLibraries
                                     ImageOutput.Image_LAB = new LAB_Pixel[RawImage.ImageWidth, RawImage.ImageHeight];
                                     ImageOutput.Image_HSV = new HSV_Pixel[RawImage.ImageWidth, RawImage.ImageHeight];
 
+                                    ImageOutput.RGB_MinMax = new RGB_MinMaxValues();
+
                                     double black_min_level = 0;
 
                                     double clip_level_min = 0;
@@ -68,7 +70,6 @@ namespace MaxssauLibraries
                                     {
                                         black_min_level = Math.Min(Math.Min(RawImage.Image_Input_MinMaxLevels.R.get_min(), RawImage.Image_Input_MinMaxLevels.G1.get_min()), Math.Min(RawImage.Image_Input_MinMaxLevels.B.get_min(), RawImage.Image_Input_MinMaxLevels.G2.get_min()));
                                     }
-
                                     /*
                                     *  parallel processiong stage
                                     */
@@ -84,26 +85,24 @@ namespace MaxssauLibraries
                                             ImageOutput.Image_RGB[x, y].G1 = (RawImage.Image_Input_RAW_RGB[x, y].G1 - black_min_level);
                                             ImageOutput.Image_RGB[x, y].G2 = (RawImage.Image_Input_RAW_RGB[x, y].G2 - black_min_level);
                                             ImageOutput.Image_RGB[x, y].B = (RawImage.Image_Input_RAW_RGB[x, y].B - black_min_level);
+                                            ImageOutput.Image_RGB[x, y].G = ((ImageOutput.Image_RGB[x, y].G1 + ImageOutput.Image_RGB[x, y].G2) / 2);
 
                                             ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * RawImage.pre_mul[0];
-                                            ImageOutput.Image_RGB[x, y].G1 = ImageOutput.Image_RGB[x, y].G1 * RawImage.pre_mul[1];
+                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G * RawImage.pre_mul[1];
                                             ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * RawImage.pre_mul[2];
-                                            ImageOutput.Image_RGB[x, y].G2 = ImageOutput.Image_RGB[x, y].G2 * RawImage.pre_mul[3];
 
                                             ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
-                                            ImageOutput.RGB_MinMax.G1.calc(ImageOutput.Image_RGB[x, y].G1);
+                                            ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
                                             ImageOutput.RGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
-                                            ImageOutput.RGB_MinMax.G2.calc(ImageOutput.Image_RGB[x, y].G2);
+
                                         }
                                     });
 
-                                    clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), Math.Min(ImageOutput.RGB_MinMax.G1.get_max(), ImageOutput.RGB_MinMax.G2.get_max()));
+                                    clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), ImageOutput.RGB_MinMax.G.get_max());
 
-                                    Matrix rgb_data = new Matrix(4, 1);
-                                    Matrix cm_data = new Matrix(4, 3);
-                                    Matrix out_data = new Matrix(4, 1);
+                                    double [,] cm_data = new double[3, 3];
 
-                                    for (int i = 0; i < 4; i++)
+                                    for (int i = 0; i < 3; i++)
                                     {
                                         for (int j = 0; j < 3; j++)
                                         {
@@ -117,55 +116,107 @@ namespace MaxssauLibraries
                                     {
                                         for (int y = 0; y < RawImage.ImageHeight; y++)
                                         {
+                                            /*if (ImageOutput.Image_RGB[x, y].R < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = 0;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].G < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].G = 0;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].B < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].B = 0;
+                                            }*/
 
                                             if (ImageOutput.Image_RGB[x, y].R > clip_level_min)
                                             {
                                                 ImageOutput.Image_RGB[x, y].R = clip_level_min;
-                                            }
+                                            }                                            
                                             if (ImageOutput.Image_RGB[x, y].B > clip_level_min)
                                             {
                                                 ImageOutput.Image_RGB[x, y].B = clip_level_min;
-                                            }
-                                            if (ImageOutput.Image_RGB[x, y].G1 > clip_level_min)
+                                            }                                            
+                                            if (ImageOutput.Image_RGB[x, y].G > clip_level_min)
                                             {
-                                                ImageOutput.Image_RGB[x, y].G1 = clip_level_min;
-                                            }
-                                            if (ImageOutput.Image_RGB[x, y].G2 > clip_level_min)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].G2 = clip_level_min;
+                                                ImageOutput.Image_RGB[x, y].G = clip_level_min;
                                             }
 
                                             ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / clip_level_min;
-                                            ImageOutput.Image_RGB[x, y].G1 = ImageOutput.Image_RGB[x, y].G1 / clip_level_min;
+                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_min;
                                             ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_min;
-                                            ImageOutput.Image_RGB[x, y].G2 = ImageOutput.Image_RGB[x, y].G2 / clip_level_min;
 
-                                            rgb_data[0, 0] = ImageOutput.Image_RGB[x, y].R;
-                                            rgb_data[0, 1] = ImageOutput.Image_RGB[x, y].G1;
-                                            rgb_data[0, 2] = ImageOutput.Image_RGB[x, y].B;
-                                            rgb_data[0, 3] = ImageOutput.Image_RGB[x, y].G2;
+                                            double[] rgb_data = new double[3];                                            
+                                            double[] out_data = new double[3];
 
-                                            out_data = rgb_data * cm_data;
+                                            rgb_data[0] = ImageOutput.Image_RGB[x, y].R;
+                                            rgb_data[1] = ImageOutput.Image_RGB[x, y].G;
+                                            rgb_data[2] = ImageOutput.Image_RGB[x, y].B;
+                                            
+                                            ColorConverter.MulMatrix3x3withM3(ref cm_data, ref out_data, rgb_data);
 
-                                            ImageOutput.Image_RGB[x, y].R = out_data[0, 0];
-                                            ImageOutput.Image_RGB[x, y].G1 = out_data[0, 1];
-                                            ImageOutput.Image_RGB[x, y].B = out_data[0, 2];
-                                            ImageOutput.Image_RGB[x, y].G2 = out_data[0, 3];
+                                            /*ImageOutput.Image_RGB[x, y].R = out_data[0];
+                                            ImageOutput.Image_RGB[x, y].G = out_data[1];
+                                            ImageOutput.Image_RGB[x, y].B = out_data[2];*/
+
+                                            ImageOutput.Image_RGB[x, y].R = ColorConverter.RGB_to_sRGB(out_data[0]);
+                                            ImageOutput.Image_RGB[x, y].G = ColorConverter.RGB_to_sRGB(out_data[1]);
+                                            ImageOutput.Image_RGB[x, y].B = ColorConverter.RGB_to_sRGB(out_data[2]);
 
                                             ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
-                                            ImageOutput.RGB_MinMax.G1.calc(ImageOutput.Image_RGB[x, y].G1);
+                                            ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
                                             ImageOutput.RGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
-                                            ImageOutput.RGB_MinMax.G2.calc(ImageOutput.Image_RGB[x, y].G2);
+
                                         }
                                     });
 
-                                    clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), Math.Min(ImageOutput.RGB_MinMax.G1.get_max(), ImageOutput.RGB_MinMax.G2.get_max()));
+                                    clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), ImageOutput.RGB_MinMax.G.get_max());
+
+                                    ImageOutput.RGB_MinMax.Reset();
 
                                     Parallel.For(0, RawImage.ImageWidth, x =>
                                     {
                                         for (int y = 0; y < RawImage.ImageHeight; y++)
                                         {
-                                            
+                                            if(ImageOutput.Image_RGB[x, y].R < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = 0;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].R > clip_level_min)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = clip_level_min;
+                                                //ImageOutput.Image_RGB[x, y].R = 1;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].B < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].B = 0;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].B > clip_level_min)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].B = clip_level_min;
+                                                //ImageOutput.Image_RGB[x, y].B = 1;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].G < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].G = 0;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].G > clip_level_min)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].G = clip_level_min;
+                                                //ImageOutput.Image_RGB[x, y].G = 1;
+                                            }
+
+                                            ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / clip_level_min;
+                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_min;
+                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_min;
+
+                                            ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
+                                            ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
+                                            ImageOutput.RGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
+
+                                            rgb_histogram_output.R.AddValue(ImageOutput.Image_RGB[x, y].R);
+                                            rgb_histogram_output.G.AddValue(ImageOutput.Image_RGB[x, y].G);
+                                            rgb_histogram_output.B.AddValue(ImageOutput.Image_RGB[x, y].B);
                                         }
                                     });
 
@@ -173,6 +224,8 @@ namespace MaxssauLibraries
                                     {
 
                                     }
+
+
                                 }
                             }
                         }
