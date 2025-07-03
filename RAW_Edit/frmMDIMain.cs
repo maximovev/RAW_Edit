@@ -347,7 +347,7 @@ namespace RAW_Edit
                 frmEdit activeChild = (frmEdit)this.ActiveMdiChild;
                 if (activeChild != null)
                 {
-                    activeChild.SaveImage();
+                    activeChild.SaveImage2();
                 }
             }
         }

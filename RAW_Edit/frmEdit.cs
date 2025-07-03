@@ -51,6 +51,8 @@ namespace RAW_Edit
         public classXMLCMReader DCP_CM_Settings;
         public classRAWConverter raw_processor;
 
+        
+
         public int CM_Selected_Profile = 0;
 
         public int ToneCurveType = 0;
@@ -90,9 +92,10 @@ namespace RAW_Edit
                     {
                         for (int y = 0; y < raw_processor.RawImage.ImageHeight; y++)
                         {
-                            pixel.R = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].R * 255);
-                            pixel.G = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].G * 255);
-                            pixel.B = Math.Min(255, raw_processor.ImageOutput.Image_RGB[x, y].B * 255);
+                            pixel.R = Math.Max(0.0f, Math.Min(255.0f, raw_processor.ImageOutput.Image_RGB[x, y].R * 255.0f));
+                            pixel.G = Math.Max(0.0f, Math.Min(255.0f, raw_processor.ImageOutput.Image_RGB[x, y].G * 255.0f));
+                            pixel.B = Math.Max(0.0f, Math.Min(255.0f, raw_processor.ImageOutput.Image_RGB[x, y].B * 255.0f));
+
                             bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb((int)pixel.R, (int)pixel.G, (int)pixel.B));
                         }
                         image = bitmap;
@@ -112,6 +115,41 @@ namespace RAW_Edit
         {
             InitializeComponent();
         }
+        public void SaveImage2()
+        {
+            SaveFileDialog dlgSave = new SaveFileDialog();
+            dlgSave.Filter = "Tiff files (*.Tif,*.tiff)|*.Tif;*.tiff";
+            dlgSave.AddExtension = true;
+            if (dlgSave.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    ushort[,] image_r = new ushort[raw_processor.RawImage.ImageWidth, raw_processor.RawImage.ImageHeight];
+                    ushort[,] image_g = new ushort[raw_processor.RawImage.ImageWidth, raw_processor.RawImage.ImageHeight];
+                    ushort[,] image_b = new ushort[raw_processor.RawImage.ImageWidth, raw_processor.RawImage.ImageHeight];
+
+
+                    for (int x = 0; x < raw_processor.RawImage.ImageWidth; x++)
+                    {
+                        for (int y = 0; y < raw_processor.RawImage.ImageHeight; y++)
+                        {
+                            image_r[x, y] = (ushort)(raw_processor.ImageOutput.Image_RGB[x, y].R * 65365);
+                            image_g[x, y] = (ushort)(raw_processor.ImageOutput.Image_RGB[x, y].G * 65365);
+                            image_b[x, y] = (ushort)(raw_processor.ImageOutput.Image_RGB[x, y].B * 65365);
+                        }
+                    }
+
+                    //Tiff16BitSaver.SaveRgb16BitTiff(dlgSave.FileName,image_r,image_g,image_b);
+                    LibTiffNET.SaveWithLibTiff(dlgSave.FileName, image_r, image_g, image_b);
+
+                }
+                catch (Exception ex)
+                {
+                    AddToLog(ex);
+                }
+            }
+        }
+
 
         public void SaveImage()
         {
@@ -168,6 +206,7 @@ namespace RAW_Edit
             raw_processor.ConversionStageSetup.ColorTransform = true;
             raw_processor.ConversionStageSetup.ApplyGamma = true;
             raw_processor.ConversionStageSetup.UseHighLightReconstructuion = false;
+            raw_processor.ConversionStageSetup.ConvertTosRGB = false;
 
             switch (ToneCurveType)
             {

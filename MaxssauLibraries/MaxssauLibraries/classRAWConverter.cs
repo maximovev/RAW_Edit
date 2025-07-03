@@ -29,6 +29,8 @@ namespace MaxssauLibraries
         public ImagePack ImageOutput = new ImagePack();
         public ImagePack ImageTemp = new ImagePack();
 
+        public double gamma = 2.2f;
+
         public OperationStatus RAW_Process()
         {
             try
@@ -155,13 +157,18 @@ namespace MaxssauLibraries
                                             
                                             ColorConverter.MulMatrix3x3withM3(ref cm_data, ref out_data, rgb_data);
 
-                                            /*ImageOutput.Image_RGB[x, y].R = out_data[0];
-                                            ImageOutput.Image_RGB[x, y].G = out_data[1];
-                                            ImageOutput.Image_RGB[x, y].B = out_data[2];*/
-
-                                            ImageOutput.Image_RGB[x, y].R = ColorConverter.RGB_to_sRGB(out_data[0]);
-                                            ImageOutput.Image_RGB[x, y].G = ColorConverter.RGB_to_sRGB(out_data[1]);
-                                            ImageOutput.Image_RGB[x, y].B = ColorConverter.RGB_to_sRGB(out_data[2]);
+                                            if (ConversionStageSetup.ConvertTosRGB == true)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = ColorConverter.RGB_to_sRGB(out_data[0]);
+                                                ImageOutput.Image_RGB[x, y].G = ColorConverter.RGB_to_sRGB(out_data[1]);
+                                                ImageOutput.Image_RGB[x, y].B = ColorConverter.RGB_to_sRGB(out_data[2]);
+                                            }
+                                            else
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = out_data[0];
+                                                ImageOutput.Image_RGB[x, y].G = out_data[1];
+                                                ImageOutput.Image_RGB[x, y].B = out_data[2];
+                                            }
 
                                             ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
                                             ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
@@ -210,13 +217,17 @@ namespace MaxssauLibraries
                                             ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_min;
                                             ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_min;
 
+                                            ImageOutput.Image_RGB[x, y].R = Math.Pow(ImageOutput.Image_RGB[x, y].R, 1/gamma);
+                                            ImageOutput.Image_RGB[x, y].G = Math.Pow(ImageOutput.Image_RGB[x, y].G, 1/gamma);
+                                            ImageOutput.Image_RGB[x, y].B = Math.Pow(ImageOutput.Image_RGB[x, y].B, 1/gamma);
+
                                             ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
                                             ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
                                             ImageOutput.RGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
 
-                                            rgb_histogram_output.R.AddValue(ImageOutput.Image_RGB[x, y].R);
+                                            /*rgb_histogram_output.R.AddValue(ImageOutput.Image_RGB[x, y].R);
                                             rgb_histogram_output.G.AddValue(ImageOutput.Image_RGB[x, y].G);
-                                            rgb_histogram_output.B.AddValue(ImageOutput.Image_RGB[x, y].B);
+                                            rgb_histogram_output.B.AddValue(ImageOutput.Image_RGB[x, y].B);*/
                                         }
                                     });
 

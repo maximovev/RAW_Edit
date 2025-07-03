@@ -251,6 +251,7 @@ namespace MaxssauLibraries
         public bool ApplyGamma;
         public bool UseHighLightReconstructuion;
         public bool ApplyToneCurve;
+        public bool ConvertTosRGB;
     }
 
     internal class classRAWBaseElements
