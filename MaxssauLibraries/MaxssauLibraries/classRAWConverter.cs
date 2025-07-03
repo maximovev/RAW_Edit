@@ -30,6 +30,8 @@ namespace MaxssauLibraries
         public ImagePack ImageTemp = new ImagePack();
 
         public double gamma = 2.2f;
+        public double exposure_corretion_ev = 0;
+        public double saturation = 1;
 
         public OperationStatus RAW_Process()
         {
@@ -65,17 +67,23 @@ namespace MaxssauLibraries
                                     ImageOutput.RGB_MinMax = new RGB_MinMaxValues();
 
                                     double black_min_level = 0;
+                                    double black_max_level = 0;
+
 
                                     double clip_level_min = 0;
+                                    double clip_level_max = 0;
 
                                     if (ConversionStageSetup.BlackSubstract == true)
                                     {
                                         black_min_level = Math.Min(Math.Min(RawImage.Image_Input_MinMaxLevels.R.get_min(), RawImage.Image_Input_MinMaxLevels.G1.get_min()), Math.Min(RawImage.Image_Input_MinMaxLevels.B.get_min(), RawImage.Image_Input_MinMaxLevels.G2.get_min()));
+
                                     }
                                     /*
                                     *  parallel processiong stage
                                     */
 
+
+                                    black_max_level = Math.Max(Math.Max(RawImage.Image_Input_MinMaxLevels.R.get_max(), RawImage.Image_Input_MinMaxLevels.G.get_max()), RawImage.Image_Input_MinMaxLevels.B.get_max());
                                     ImageOutput.RGB_MinMax.Reset();
 
                                     Parallel.For(0, RawImage.ImageWidth, x =>
@@ -89,9 +97,24 @@ namespace MaxssauLibraries
                                             ImageOutput.Image_RGB[x, y].B = (RawImage.Image_Input_RAW_RGB[x, y].B - black_min_level);
                                             ImageOutput.Image_RGB[x, y].G = ((ImageOutput.Image_RGB[x, y].G1 + ImageOutput.Image_RGB[x, y].G2) / 2);
 
-                                            ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * RawImage.pre_mul[0];
-                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G * RawImage.pre_mul[1];
-                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * RawImage.pre_mul[2];
+                                            ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R * RawImage.pre_mul[0] * Math.Pow(2, exposure_corretion_ev);
+                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G * RawImage.pre_mul[1] * Math.Pow(2, exposure_corretion_ev);
+                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B * RawImage.pre_mul[2] * Math.Pow(2, exposure_corretion_ev);
+
+                                            if(ImageOutput.Image_RGB[x, y].R > black_max_level)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = black_max_level;
+                                            }
+
+                                            if (ImageOutput.Image_RGB[x, y].G > black_max_level)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].G = black_max_level;
+                                            }
+
+                                            if (ImageOutput.Image_RGB[x, y].B > black_max_level)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].B = black_max_level;
+                                            }
 
                                             ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
                                             ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
@@ -144,9 +167,9 @@ namespace MaxssauLibraries
                                                 ImageOutput.Image_RGB[x, y].G = clip_level_min;
                                             }
 
-                                            ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / clip_level_min;
-                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_min;
-                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_min;
+                                            ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / black_max_level;
+                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / black_max_level;
+                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / black_max_level;
 
                                             double[] rgb_data = new double[3];                                            
                                             double[] out_data = new double[3];
@@ -157,18 +180,11 @@ namespace MaxssauLibraries
                                             
                                             ColorConverter.MulMatrix3x3withM3(ref cm_data, ref out_data, rgb_data);
 
-                                            if (ConversionStageSetup.ConvertTosRGB == true)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].R = ColorConverter.RGB_to_sRGB(out_data[0]);
-                                                ImageOutput.Image_RGB[x, y].G = ColorConverter.RGB_to_sRGB(out_data[1]);
-                                                ImageOutput.Image_RGB[x, y].B = ColorConverter.RGB_to_sRGB(out_data[2]);
-                                            }
-                                            else
-                                            {
-                                                ImageOutput.Image_RGB[x, y].R = out_data[0];
-                                                ImageOutput.Image_RGB[x, y].G = out_data[1];
-                                                ImageOutput.Image_RGB[x, y].B = out_data[2];
-                                            }
+                                            
+                                            ImageOutput.Image_RGB[x, y].R = out_data[0];
+                                            ImageOutput.Image_RGB[x, y].G = out_data[1];
+                                            ImageOutput.Image_RGB[x, y].B = out_data[2];
+                                            
 
                                             ImageOutput.RGB_MinMax.R.calc(ImageOutput.Image_RGB[x, y].R);
                                             ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
@@ -177,7 +193,9 @@ namespace MaxssauLibraries
                                         }
                                     });
 
-                                    clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), ImageOutput.RGB_MinMax.G.get_max());
+                                    //clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), ImageOutput.RGB_MinMax.G.get_max());
+
+                                    clip_level_max = Math.Max(Math.Max(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.G.get_max()), ImageOutput.RGB_MinMax.B.get_max());
 
                                     ImageOutput.RGB_MinMax.Reset();
 
@@ -189,33 +207,63 @@ namespace MaxssauLibraries
                                             {
                                                 ImageOutput.Image_RGB[x, y].R = 0;
                                             }
-                                            if (ImageOutput.Image_RGB[x, y].R > clip_level_min)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].R = clip_level_min;
-                                                //ImageOutput.Image_RGB[x, y].R = 1;
-                                            }
                                             if (ImageOutput.Image_RGB[x, y].B < 0)
                                             {
                                                 ImageOutput.Image_RGB[x, y].B = 0;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].G < 0)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].G = 0;
+                                            }
+
+                                            if (ImageOutput.Image_RGB[x, y].R > 1)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = 1;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].B > 1)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].B = 1;
+                                            }
+                                            if (ImageOutput.Image_RGB[x, y].G > 1)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].G = 1;
+                                            }
+
+                                            /*if (ImageOutput.Image_RGB[x, y].R > clip_level_min)
+                                            {
+                                                ImageOutput.Image_RGB[x, y].R = clip_level_min;
+                                                //ImageOutput.Image_RGB[x, y].R = 1;
                                             }
                                             if (ImageOutput.Image_RGB[x, y].B > clip_level_min)
                                             {
                                                 ImageOutput.Image_RGB[x, y].B = clip_level_min;
                                                 //ImageOutput.Image_RGB[x, y].B = 1;
                                             }
-                                            if (ImageOutput.Image_RGB[x, y].G < 0)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].G = 0;
-                                            }
                                             if (ImageOutput.Image_RGB[x, y].G > clip_level_min)
                                             {
                                                 ImageOutput.Image_RGB[x, y].G = clip_level_min;
                                                 //ImageOutput.Image_RGB[x, y].G = 1;
+                                            }*/
+
+                                            /*ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / clip_level_max;
+                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_max;
+                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_max;*/
+
+                                            HSV_Pixel hsv_pixel = new HSV_Pixel();
+
+                                            if (ConversionStageSetup.ApplyToneCurve == true)
+                                            {
+                                                hsv_pixel=ColorConverter.RGB_to_HSV(ImageOutput.Image_RGB[x, y]);
+                                                //hsv_pixel.V = 1 / (1 + Math.Exp(-12 * (hsv_pixel.V - 0.55)));
+                                                hsv_pixel.V = hsv_pixel.V + 0.5 * hsv_pixel.V * (1 - hsv_pixel.V) * (2 * hsv_pixel.V -1);
+                                                hsv_pixel.S = hsv_pixel.S * saturation;
+                                                if(hsv_pixel.S > 1)
+                                                {
+                                                    hsv_pixel.S = 1;
+                                                }
+                                                ImageOutput.Image_RGB[x, y]=ColorConverter.HSV_to_RGB(hsv_pixel);
                                             }
 
-                                            ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / clip_level_min;
-                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_min;
-                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_min;
 
                                             ImageOutput.Image_RGB[x, y].R = Math.Pow(ImageOutput.Image_RGB[x, y].R, 1/gamma);
                                             ImageOutput.Image_RGB[x, y].G = Math.Pow(ImageOutput.Image_RGB[x, y].G, 1/gamma);
@@ -225,18 +273,10 @@ namespace MaxssauLibraries
                                             ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
                                             ImageOutput.RGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
 
-                                            /*rgb_histogram_output.R.AddValue(ImageOutput.Image_RGB[x, y].R);
-                                            rgb_histogram_output.G.AddValue(ImageOutput.Image_RGB[x, y].G);
-                                            rgb_histogram_output.B.AddValue(ImageOutput.Image_RGB[x, y].B);*/
                                         }
                                     });
 
-                                    if (ConversionStageSetup.ApplyToneCurve == true)
-                                    {
-
-                                    }
-
-
+                                    
                                 }
                             }
                         }
