@@ -208,8 +208,8 @@ namespace RAW_Edit
             raw_processor.ConversionStageSetup.UseHighLightReconstructuion = false;
             raw_processor.ConversionStageSetup.ConvertTosRGB = false;
             raw_processor.ConversionStageSetup.ApplyToneCurve = true;
-            raw_processor.exposure_corretion_ev=0;
-            raw_processor.saturation = 1;
+            raw_processor.exposure_corretion_ev=1;
+            raw_processor.saturation = 1.2;
 
 
             switch (ToneCurveType)

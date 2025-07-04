@@ -141,19 +141,7 @@ namespace MaxssauLibraries
                                     {
                                         for (int y = 0; y < RawImage.ImageHeight; y++)
                                         {
-                                            /*if (ImageOutput.Image_RGB[x, y].R < 0)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].R = 0;
-                                            }
-                                            if (ImageOutput.Image_RGB[x, y].G < 0)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].G = 0;
-                                            }
-                                            if (ImageOutput.Image_RGB[x, y].B < 0)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].B = 0;
-                                            }*/
-
+                                            
                                             if (ImageOutput.Image_RGB[x, y].R > clip_level_min)
                                             {
                                                 ImageOutput.Image_RGB[x, y].R = clip_level_min;
@@ -190,19 +178,6 @@ namespace MaxssauLibraries
                                             ImageOutput.RGB_MinMax.G.calc(ImageOutput.Image_RGB[x, y].G);
                                             ImageOutput.RGB_MinMax.B.calc(ImageOutput.Image_RGB[x, y].B);
 
-                                        }
-                                    });
-
-                                    //clip_level_min = Math.Min(Math.Min(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.B.get_max()), ImageOutput.RGB_MinMax.G.get_max());
-
-                                    clip_level_max = Math.Max(Math.Max(ImageOutput.RGB_MinMax.R.get_max(), ImageOutput.RGB_MinMax.G.get_max()), ImageOutput.RGB_MinMax.B.get_max());
-
-                                    ImageOutput.RGB_MinMax.Reset();
-
-                                    Parallel.For(0, RawImage.ImageWidth, x =>
-                                    {
-                                        for (int y = 0; y < RawImage.ImageHeight; y++)
-                                        {
                                             if(ImageOutput.Image_RGB[x, y].R < 0)
                                             {
                                                 ImageOutput.Image_RGB[x, y].R = 0;
@@ -228,26 +203,6 @@ namespace MaxssauLibraries
                                             {
                                                 ImageOutput.Image_RGB[x, y].G = 1;
                                             }
-
-                                            /*if (ImageOutput.Image_RGB[x, y].R > clip_level_min)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].R = clip_level_min;
-                                                //ImageOutput.Image_RGB[x, y].R = 1;
-                                            }
-                                            if (ImageOutput.Image_RGB[x, y].B > clip_level_min)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].B = clip_level_min;
-                                                //ImageOutput.Image_RGB[x, y].B = 1;
-                                            }
-                                            if (ImageOutput.Image_RGB[x, y].G > clip_level_min)
-                                            {
-                                                ImageOutput.Image_RGB[x, y].G = clip_level_min;
-                                                //ImageOutput.Image_RGB[x, y].G = 1;
-                                            }*/
-
-                                            /*ImageOutput.Image_RGB[x, y].R = ImageOutput.Image_RGB[x, y].R / clip_level_max;
-                                            ImageOutput.Image_RGB[x, y].G = ImageOutput.Image_RGB[x, y].G / clip_level_max;
-                                            ImageOutput.Image_RGB[x, y].B = ImageOutput.Image_RGB[x, y].B / clip_level_max;*/
 
                                             HSV_Pixel hsv_pixel = new HSV_Pixel();
 
